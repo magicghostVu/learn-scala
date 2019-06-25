@@ -18,7 +18,7 @@ object Main {
     }
 
     def testFirstClassFunction: (Int, Int) => Int = {
-        val t = (a: Int, b: Int) => Int {
+        val t = (a: Int, b: Int) =>  {
             if (a % 2 == 0) a + b
             else 0
         }
@@ -42,12 +42,6 @@ object Main {
         }
 
         fac(a, 1)
-    }
-
-    def testReturnFunc = {
-        def st(a: String) = {
-            a.length
-        }
     }
 
 
@@ -84,8 +78,6 @@ object Main {
             fParam(a, b)
         }*/
     }
-
-    def main(args: Array[String]): Unit = {
 
     class Student(n: String, a: Int) {
         val name: String = n
@@ -166,22 +158,8 @@ object Main {
         a + " " + b
     }
 
-
     def main(args: Array[String]): Unit = {
-        //val y = testFirstClassFunction
-        //println(y(10, 12))
-        //tryCurryFunc()
-        /*val u = cryFuncv2(5)(5)
-        println(u)*/
-        val h = (a: Int, b: Int) => Int {
-            0
-        }
-
-
-        val y = curryFunc("phuvh")(_)
-
-        println(y("love vint"))
-
+        println("this is scala")
 
     }
 }

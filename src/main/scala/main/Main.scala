@@ -40,7 +40,6 @@ object Main {
                 fac(i - 1, i * aa)
             }
         }
-
         fac(a, 1)
     }
 

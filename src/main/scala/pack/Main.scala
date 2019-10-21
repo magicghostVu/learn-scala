@@ -1,11 +1,15 @@
 package pack
 
+import java.util
+
 case class Person(name: String, age: Int)
 
 
 object Main {
 
 
+    //r là hàm reduce, chưa logic về việc 2 tham số sẽ reduce với nhau thế nào
+    // m là hàm map, nó chứa logic về việc số đầu vào sẽ biến thành gì sau hàm này
     def mapReduce(r: (Int, Int) => Int,
                   i: Int,
                   m: Int => Int,
@@ -68,7 +72,12 @@ object Main {
 
         println("done g")
 
-        //println(t.getClass)
+        
+
+        val l = new util.ArrayList[String]()
+
+
+        println(l.getClass)
     }
 
 }

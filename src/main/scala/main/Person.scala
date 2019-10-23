@@ -1,8 +1,6 @@
 package main
 
-import scala.beans.BeanProperty
-
-class Person(@BeanProperty name: String, @BeanProperty age: Int) {
+class Person(private var _name: String, private var _age: Int) {
     def this() {
         this("phuvh", 24)
     }
@@ -11,6 +9,17 @@ class Person(@BeanProperty name: String, @BeanProperty age: Int) {
         this(name, 0)
     }
 
-    override def toString: String =  s"$name: $age"
+
+    def name: String = _name
+
+    def age: Int = _age
+
+    // coi như đây là một kiểu setter của scala
+    // function assignment
+    def age_=(newAge: Int): Unit = {
+        _age = newAge
+    }
+
+    override def toString: String = s"$name: $age"
 
 }

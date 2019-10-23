@@ -2,7 +2,6 @@ package pack
 
 import java.util
 
-case class Person(name: String, age: Int)
 
 
 object Main {
@@ -50,10 +49,12 @@ object Main {
         List[A](a)
     }
 
+
+    // thực ra với khai báo function thì def và var không có tác dụng khác biệt lắm, hoặc là mình chưa biết
     def main(args: Array[String]): Unit = {
-        val reduceFunc: (Int, Int) => Int = (a, b) => {
+        /*val reduceFunc: (Int, Int) => Int = (a, b) => {
             a + b
-        }
+        }*/
         val mapFunc: Int => Int = a => 2 * a
         val originVal = 0
 
@@ -90,7 +91,7 @@ object Main {
             try {
                 op
             } catch {
-                case _ => println
+                case e: Exception => println(e)
             }
         }
 
@@ -116,24 +117,31 @@ object Main {
             println("done")
         }
 
-        def aa(i: Int, b: => Int): Int = {
-            b
+        def aa(i: Int, b: Int => Int): Int = {
+            b(9)
         }
 
-        /*val k: Int = aa(1, {
-            1
-        })*/
+        def bb(a: Int): Int = {
+            a + 1
+        }
 
 
+        var rAa = aa(1, bb)
+
+
+
+        //val u = l1 :+ 3
+    }
+
+    def useForComprehension(): Unit = {
         val l1: List[Int] = List[Int](1, 3, 4, 5)
 
         val l2: List[Int] = List[Int](6, 7, 8, 9)
 
+
+        // sử dụng vòng for tổng quát
         val l3: List[Int] = for (a <- l1; b <- l2; if a + b > 10) yield a + b
-
-
-
-        //println("k is ", k)
     }
+
 
 }

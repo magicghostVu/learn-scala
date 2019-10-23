@@ -2,7 +2,7 @@ package useoop
 
 import java.util.concurrent.ThreadLocalRandom
 import org.slf4j.{Logger, LoggerFactory}
-import java.sql.{ Date => MyDate }
+import java.sql.{ Date => MyDate } // alias import
 
 
 object RunOOP {
@@ -22,6 +22,6 @@ object RunOOP {
         val canAccess: Boolean = role.canAccess("all")
         logger().info("can access is {}", canAccess)
 
-        MyDate
+        //MyDate
     }
 }

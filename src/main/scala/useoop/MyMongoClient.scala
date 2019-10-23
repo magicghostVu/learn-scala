@@ -13,16 +13,17 @@ class MyMongoClient(val host: String, val port: Int) {
 
     private def internalClient(): MongoClient = _internalClient
 
-    def db(name: String): MongoDatabase = {
+    def getDB(name: String): MongoDatabase = {
         internalClient().getDatabase(name)
     }
 
     def dropDb(name: String): Unit = {
         internalClient().dropDatabase(name)
     }
-    /*def createDb(name:String): Unit ={
-        new
-    }*/
+
+    def createDb(name: String): MyDB = {
+        MyDB(internalClient().getDatabase(name))
+    }
 }
 
 

@@ -1,7 +1,6 @@
 package useoop
 
 import com.mongodb.MongoClient
-import com.mongodb.client.MongoDatabase
 
 // nếu không có var/val được khai báo trong constructor thì sau khi gọi hàm khởi tạo sẽ không truy cập trực tiếp các thuộc tính đó nữa
 class MyMongoClient(val host: String, val port: Int) {
@@ -13,8 +12,8 @@ class MyMongoClient(val host: String, val port: Int) {
 
     private def internalClient(): MongoClient = _internalClient
 
-    def getDB(name: String): MongoDatabase = {
-        internalClient().getDatabase(name)
+    def getDB(name: String): MyDB = {
+        MyDB(internalClient().getDatabase(name))
     }
 
     def dropDb(name: String): Unit = {
@@ -24,6 +23,7 @@ class MyMongoClient(val host: String, val port: Int) {
     def createDb(name: String): MyDB = {
         MyDB(internalClient().getDatabase(name))
     }
+
 }
 
 

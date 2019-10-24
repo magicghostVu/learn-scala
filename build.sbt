@@ -8,6 +8,9 @@ libraryDependencies += "org.mongodb" % "mongo-java-driver" % "3.8.0"
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.28"
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
+// https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+libraryDependencies += "com.google.code.findbugs" % "jsr305" % "3.0.2"
+
 
 
 

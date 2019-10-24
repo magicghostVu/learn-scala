@@ -1,8 +1,7 @@
 package useoop
 
-import java.util.concurrent.ThreadLocalRandom
+import org.bson.Document
 import org.slf4j.{Logger, LoggerFactory}
-import java.sql.{ Date => MyDate } // alias import
 
 
 object RunOOP {
@@ -12,16 +11,17 @@ object RunOOP {
     }
 
     def main(args: Array[String]): Unit = {
-        //val client: MyMongoClient = new MyMongoClient()
-        val t: ThreadLocalRandom = ThreadLocalRandom.current
-        val ir = t.nextInt
-        logger().info("i random is {}", ir)
+        val client: MyMongoClient = new MyMongoClient()
+        val myDB: MyDB = client.getDB("phuvh")
 
-        val role = AbsRole("root")
+        val collection1 = myDB.updatableCollection("collection_1")
 
-        val canAccess: Boolean = role.canAccess("all")
-        logger().info("can access is {}", canAccess)
+        collection1 + new Document()
 
+
+        for (s: String <- client.getDB("mydb").collectionNames()) {
+            println(s)
+        }
         //MyDate
     }
 }

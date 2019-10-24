@@ -8,14 +8,14 @@ import org.bson.Document
 import scala.collection.convert.Wrappers.JSetWrapper
 import scala.collection.mutable
 
-class MyDB private(val db: DBOrigin) {
+class MyDB private(private val db: DBOrigin) {
     def collectionNames(): mutable.Set[String] = {
         val setJava = new util.HashSet[String]()
         db.listCollectionNames().into(setJava)
         for (name <- JSetWrapper(setJava)) yield name
     }
 
-    def collection(name: String): Collection[Document] = {
+    private def collection(name: String): Collection[Document] = {
         db.getCollection(name)
     }
 

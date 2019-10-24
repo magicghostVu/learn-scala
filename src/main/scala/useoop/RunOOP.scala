@@ -1,5 +1,8 @@
 package useoop
 
+
+import com.mongodb.Block
+import com.mongodb.client.FindIterable
 import org.bson.Document
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -12,16 +15,31 @@ object RunOOP {
 
     def main(args: Array[String]): Unit = {
         val client: MyMongoClient = new MyMongoClient()
-        val myDB: MyDB = client.getDB("phuvh")
+        val myDB: MyDB = client.getDB("learn_scala")
 
-        val collection1 = myDB.updatableCollection("collection_1")
+        val readOnlyCollection: MyCollection = myDB.readOnlyCollection("oop")
 
-        collection1 + new Document()
+        //val numRecord: Long = collection.count(new Document())
 
 
-        for (s: String <- client.getDB("mydb").collectionNames()) {
-            println(s)
+        val filterData = new Document("name", "phuvh")
+
+        val resultFind = readOnlyCollection.find(filterData)
+
+
+        for (d: Document <- resultFind) {
+            logger().info("d is {}", d)
         }
-        //MyDate
+
+
+       /* val updatableCollection = myDB.updatableCollection("oop")
+
+        val newD = new Document()
+        newD.put("name", "vint")
+        newD.put("age", 24)
+
+        updatableCollection + newD*/
+
+
     }
 }

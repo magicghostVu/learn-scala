@@ -1,12 +1,25 @@
 package useoop
 
-import com.mongodb.client.{FindIterable, MongoCollection}
+import java.util.function.Consumer
+
+import com.mongodb.client.{MongoCollection, MongoIterable}
 import org.bson.Document
+
+import scala.collection.mutable
 
 trait ReadOnlyCollection {
     val internal: MongoCollection[Document] // đây là một abstract member
 
-    def find(filterData: Document): FindIterable[Document] = internal find filterData
+    def find(filterData: Document): mutable.Set[Document] = {
+        val raw: MongoIterable[Document] = internal.find(filterData)
+        val mSet: mutable.Set[Document] = new mutable.HashSet[Document]()
+        val c: Consumer[Document] = d => {
+            mSet += d
+        }
+        raw.forEach(c)
+        mSet
+    }
+
 
     def findOne(filterData: Document): Document = internal find filterData first
 
@@ -14,9 +27,9 @@ trait ReadOnlyCollection {
 }
 
 trait AdministratorCollection extends ReadOnlyCollection {
-    def drop: Unit = internal drop
+    def drop: Unit = internal drop()
 
-    def dropIndexes: Unit = internal dropIndexes
+    def dropIndexes: Unit = internal dropIndexes()
 }
 
 trait UpdatableCollection extends ReadOnlyCollection {
@@ -33,5 +46,6 @@ trait UpdatableCollection extends ReadOnlyCollection {
     }
 }
 
+// khi một class kế thừa 1 trait, nó bắt buộc phải override cái abstract member, (có mặt trong primary constructor)
 class MyCollection(override val internal: MongoCollection[Document]) extends ReadOnlyCollection
 

@@ -5,13 +5,13 @@ import org.bson.Document
 
 import scala.collection.convert.Wrappers.JIterableWrapper
 
-class MyDB private(val db: DBOrigin) {
+class MyDB private(private val db: DBOrigin) {
     def collectionNames(): Iterable[String] = {
         val allName: JIterableWrapper[String] = JIterableWrapper(db.listCollectionNames())
         for (name <- allName) yield name
     }
 
-    def collection(name: String): Collection[Document] = {
+    private def collection(name: String): Collection[Document] = {
         db.getCollection(name)
     }
 

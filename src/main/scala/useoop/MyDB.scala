@@ -1,18 +1,14 @@
 package useoop
 
-import java.util
-
 import com.mongodb.client.{MongoCollection => Collection, MongoDatabase => DBOrigin}
 import org.bson.Document
 
-import scala.collection.convert.Wrappers.JSetWrapper
-import scala.collection.mutable
+import scala.collection.convert.Wrappers.JIterableWrapper
 
 class MyDB private(val db: DBOrigin) {
-    def collectionNames(): mutable.Set[String] = {
-        val setJava = new util.HashSet[String]()
-        db.listCollectionNames().into(setJava)
-        for (name <- JSetWrapper(setJava)) yield name
+    def collectionNames(): Iterable[String] = {
+        val allName: JIterableWrapper[String] = JIterableWrapper(db.listCollectionNames())
+        for (name <- allName) yield name
     }
 
     def collection(name: String): Collection[Document] = {
@@ -30,6 +26,10 @@ class MyDB private(val db: DBOrigin) {
 
     def administrableCollection(name: String): MyCollection with AdministratorCollection = {
         new MyCollection(collection(name)) with AdministratorCollection
+    }
+
+    def memoizerCollection(name: String): Unit = {
+        new MyCollection(collection(name)) with Memoizer
     }
 }
 

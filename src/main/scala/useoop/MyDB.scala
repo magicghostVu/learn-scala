@@ -28,9 +28,22 @@ class MyDB private(private val db: DBOrigin) {
         new MyCollection(collection(name)) with AdministratorCollection
     }
 
-    def memoizerCollection(name: String): Unit = {
-        new MyCollection(collection(name)) with Memoizer
+    def memoizerCollection(name: String): MyCollection with MemoizerCollection = {
+        new MyCollection(collection(name)) with MemoizerCollection
     }
+
+
+    def updatableWithMemoizer(name: String) = {
+        new MyCollection(collection(name)) with UpdatableAndMemoizer
+    }
+
+    def updatableWithMemoizer_2(name: String) = {
+        new MySpecialColl(collection(name))
+    }
+
+    /*def getTestLinear(name: String) = {
+        new TestClassLinear(collection(name))
+    }*/
 }
 
 object MyDB {

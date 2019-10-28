@@ -4,6 +4,7 @@ import java.util.function.Consumer
 
 import com.mongodb.client.{MongoCollection, MongoIterable}
 import org.bson.Document
+import useoop.morequeryopt.Query
 
 
 // trong scala thì trait cũng giống như abstract class tuy nhiên nó có một số đặc điểm khác
@@ -25,7 +26,14 @@ trait ReadOnlyCollection {
         raw.forEach(c)
         mSet
     }
+
     def findOne(filterData: Document): Document = internal find filterData first
+
     def count(filterData: Document): Long = internal countDocuments filterData
+
+    def findByQuery(query: Query): Unit = {
+
+    }
+
 }
 

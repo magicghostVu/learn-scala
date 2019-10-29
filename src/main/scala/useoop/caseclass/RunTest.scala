@@ -25,13 +25,13 @@ object RunTest {
             }
         }*/
 
-        forComprehensionWithPatternMatching
+        forComprehensionWithPatternMatchingUnapply
 
         //tryCaseQuery
     }
 
 
-    def forComprehensionWithPatternMatching = {
+    def forComprehensionWithPatternMatchingUnapply = {
 
         val s: Student = Student(1, "phuvh", 24, "K58T-uet")
         val s2: Student = s.copy(name = "vint", className = "k54-ftu")
@@ -40,8 +40,7 @@ object RunTest {
 
         val lp = List[Student](s, s2, s3)
 
-        val li: List[Int] = for (Student(id, name, age, className) <- lp; val sum = id + age) yield id
-
+        val li: List[Int] = for (Student(id, name, age, className) <- lp; sum = id + age) yield id
 
         MLogger.generalLogger.info("li is {}", li)
 

@@ -1,8 +1,14 @@
 package useoop
 
 
+import java.io.File
+
+import org.apache.commons.io.FileUtils
 import org.bson.Document
+import org.json.{JSONArray, JSONObject}
 import org.slf4j.{Logger, LoggerFactory}
+
+import scala.collection.convert.Wrappers.JIterableWrapper
 
 
 object RunOOP {
@@ -11,14 +17,34 @@ object RunOOP {
         LoggerFactory.getLogger("run-oop")
     }
 
+
+    def insertData(myDB: MyDB): Unit = {
+        val coll: MyCollection with UpdatableCollection = myDB.updatableCollection("all_city_vn")
+        val start = System.currentTimeMillis()
+        val path: String = System.getProperty("user.dir") + "/datacity/cities.json"
+        val fileData: File = new File(path)
+        val jsonStr: String = FileUtils.readFileToString(fileData, "utf-8")
+        val allCitiesJson: JSONArray = new JSONArray(jsonStr)
+        val iter: Iterable[Object] = JIterableWrapper(allCitiesJson)
+        for (cityJson <- iter) {
+            val str: String = cityJson.toString
+            val d = Document.parse(str)
+            coll + d
+        }
+        val end = System.currentTimeMillis()
+        logger().info("insert done in {}", end - start)
+    }
+
+
     def main(args: Array[String]): Unit = {
         val client: MyMongoClient = new MyMongoClient()
-        val myDB: MyDB = client.getDB("learn-scala")
+        val myDB: MyDB = client.getDB("learn_scala")
 
+        insertData(myDB)
 
-        val y = myDB.updatableWithMemoizer_2("oop")
+        /*val y = myDB.updatableWithMemoizer_2("oop")
 
-        y.func
+        y.func*/
 
         /* val collection: MyCollection with UpdatableAndMemoizer = myDB.updatableWithMemoizer("oop")
          /*val coll2 = myDB.updatableWithMemoizer_2("oop")*/

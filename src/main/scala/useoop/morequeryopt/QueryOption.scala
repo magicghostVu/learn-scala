@@ -12,3 +12,5 @@ case class SkipOption(number: Int, other: QueryOption = NoOption) extends QueryO
 
 case class LimitOption(maxSize: Int, other: QueryOption = NoOption) extends QueryOption
 
+
+

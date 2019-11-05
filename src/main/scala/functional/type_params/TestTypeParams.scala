@@ -11,8 +11,8 @@ object TestTypeParams {
 
     def myIndexOf_2[A](l: List[A], v: A): Maybe[Int] = {
         val ii = myIndexOf(l, v)
-        if (ii != -1) return Just[Int](ii)
-        else return Nil
+        if (ii != -1) Maybe.just[Int](ii)
+        else Maybe.nil
     }
 
 

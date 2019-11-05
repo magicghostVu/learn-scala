@@ -1,6 +1,6 @@
 package functional.type_params
 
-abstract class Maybe[+A] {
+sealed abstract class Maybe[+A] {
     def isEmpty: Boolean
 
     def get: A
@@ -12,8 +12,18 @@ case class Just[A](v: A) extends Maybe[A] {
     override def get: A = v
 }
 
-object Nil extends Maybe[Nothing]{
+object Nil extends Maybe[Nothing] {
     override def isEmpty: Boolean = true
 
     override def get: Nothing = throw new IllegalArgumentException("can not get val from Nil")
+}
+
+object Maybe {
+    def just[A](a: A): Maybe[A] = {
+        Just[A](a)
+    }
+
+    def nil: Maybe[Nothing] = {
+        Nil
+    }
 }

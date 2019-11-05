@@ -19,11 +19,9 @@ object Nil extends Maybe[Nothing] {
 }
 
 object Maybe {
-    def just[A](a: A): Maybe[A] = {
+    def just[A](a: A): Just[A] = {
         Just[A](a)
     }
 
-    def nil: Maybe[Nothing] = {
-        Nil
-    }
+    def nil: Nil.type = Nil
 }

@@ -14,7 +14,22 @@ object TestTypeParams {
         val jj: (String, String => Int) => Int = (a, b) => {
             b(a)
         }
-        MLogger.generalLogger.info("jj class is {}", jj.getClass)
+
+
+        val f1: AnyVal => String = (a: AnyVal) => {
+            "phuvh"
+        }
+
+
+        val f2: (Int, Int => String) => String = (int, funcIntStr) => {
+            funcIntStr(int)
+        }
+
+
+        val y = f2(8, f1)
+
+
+        MLogger.generalLogger.info("y is {}", y)
     }
 
     def myIndexOf[A](l: List[A], v: A): Int = {
@@ -33,9 +48,9 @@ object TestTypeParams {
 
 
     def main(args: Array[String]): Unit = {
-        /*val l: List[String] = List[String]("1", "2", "one", "two")
+        val l: List[String] = List[String]("1", "2", "one", "two")
 
-        val i: Maybe[Int] = myIndexOf_2(l, "one__")
+        val i: Maybe[Int] = myIndexOf_2(l, "one")
 
         i match {
             case Just(v) =>
@@ -43,9 +58,13 @@ object TestTypeParams {
             case Nil =>
                 MLogger.generalLogger.info("list not contain such element")
             case _ =>
-        }*/
+        }
 
-        testVariance
+        val i2 = i.map[String](t => t.toString)
+
+        MLogger.generalLogger.info("i2 is {}", i2)
+
+        //testVariance
 
     }
 }

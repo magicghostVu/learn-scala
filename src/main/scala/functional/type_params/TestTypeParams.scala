@@ -62,7 +62,19 @@ object TestTypeParams {
 
         val i2 = i.map[String](t => t.toString)
 
-        MLogger.generalLogger.info("i2 is {}", i2)
+
+        val fMap: Int => Int = a => a + 1
+
+
+        val fReturnFunc: () => Int => Int = () => {
+            val r: Int => Int = a => a + 1
+            r
+        }
+
+        val i3 = i map[Int] fReturnFunc()
+
+
+        MLogger.generalLogger.info("i2 is {}", i3)
 
         //testVariance
 

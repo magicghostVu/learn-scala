@@ -3,10 +3,7 @@ package functional.type_params
 import useoop.MLogger
 
 object TestCallByName {
-
-
     var enableLog: Boolean = true
-
     val log: String => Unit = str => {
         if (enableLog) {
             MLogger.generalLogger.info("msg is {}", str)

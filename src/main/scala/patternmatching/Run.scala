@@ -1,6 +1,8 @@
 package patternmatching
 
+import useoop.MLogger
 
+import scala.collection.TraversableOnce
 
 
 object Run {
@@ -34,24 +36,74 @@ object Run {
         }
     }
 
+
+    def map[A, B](lOrigin: List[A], mapper: A => B): List[B] = {
+        lOrigin match {
+            case Nil => Nil
+            case ::(head, tail) => {
+                ::(mapper(head), map(tail, mapper))
+            }
+        }
+    }
+
+    def flatList[A](l: List[List[A]]): List[A] = {
+        l match {
+            case Nil => Nil
+            case ::(head, tail) => {
+                head ::: flatList(tail)
+            }
+        }
+    }
+
+    def mapUseFold[A, B](list: List[A], mapper: A => B): List[B] = {
+        val startListB = List[B]()
+        val foldF: (A, List[B]) => List[B] = (a, b) => {
+            val tmpVal: B = mapper(a)
+            tmpVal :: b
+        }
+        list.foldRight[List[B]](startListB)(foldF)
+    }
+
+    def flatListTailRecursive[A](lOrigin: List[List[A]]): List[A] = {
+        def privateFlat[B](ll: List[List[B]], acc: List[B]): List[B] = {
+            ll match {
+                case Nil => acc
+                case ::(head, tail) => {
+                    val newAcc: List[B] = head ::: acc
+                    privateFlat(tail, newAcc)
+                }
+            }
+        }
+
+        privateFlat(lOrigin, List[A]())
+        /*val tmp = privateFlat(lOrigin, List[A]())
+        tmp.reverse*/
+    }
+
+
     def main(args: Array[String]): Unit = {
         /*tryMatchingType(List("phuch", "vint"))
         tryMatchingType("phuvh")
         tryMatchingType(new Object)
         tryMatchingType(println(args))*/
 
-        userPatternMatchingWithName(10)
+        val l: List[String] = List[String]("phuvh", "vint", "quyvv")
 
-        try {
-            throw new Exception
-        } catch {
-            case e: IllegalArgumentException => {
-                println("Illegal")
-            }
-            case e: Exception => {
-                println(e)
-            }
+        val l2: List[Int] = mapUseFold[String, Int](l, a => a.hashCode)
+
+        /*val l3 = flatListTailRecursive[Char](l2)
+
+        MLogger.generalLogger.info("l3 is {}", l3)
+
+
+        val fFold: (Char, Int) => Int = (a, b) => {
+            if (a > b) a else b
         }
+
+        val p = l3.foldRight(0)(fFold)
+        MLogger.generalLogger.info("p is {}", p)*/
+
+        MLogger.generalLogger.info("l2 is {}", l2)
 
     }
 }

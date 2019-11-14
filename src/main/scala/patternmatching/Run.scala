@@ -58,10 +58,32 @@ object Run {
     def mapUseFold[A, B](list: List[A], mapper: A => B): List[B] = {
         val startListB = List[B]()
         val foldF: (A, List[B]) => List[B] = (a, b) => {
+
+            MLogger.generalLogger.info("a is {}", a)
             val tmpVal: B = mapper(a)
             tmpVal :: b
         }
         list.foldRight[List[B]](startListB)(foldF)
+    }
+
+    def mapUseFoldLeft[A, B](list: List[A], mapper: A => B): List[B] = {
+        val startListB = List[B]()
+        /*val foldF: (A, List[B]) => List[B] = (a, b) => {
+            val tmpVal: B = mapper(a)
+            tmpVal :: b
+        }*/
+
+        def funFoldLeft(list: List[B], a: A): List[B] = {
+            val b: B = mapper(a)
+
+            val arr = Array(list, a, a.hashCode)
+
+            MLogger.generalLogger.info("list is {} , a is {} code is {}", arr.asInstanceOf[Array[AnyRef]]: _*)
+
+            b :: list
+        }
+
+        list.foldLeft(startListB)(funFoldLeft)
     }
 
     def flatListTailRecursive[A](lOrigin: List[List[A]]): List[A] = {
@@ -69,6 +91,9 @@ object Run {
             ll match {
                 case Nil => acc
                 case ::(head, tail) => {
+
+                    val h: List[B] = head
+
                     val newAcc: List[B] = head ::: acc
                     privateFlat(tail, newAcc)
                 }
@@ -91,6 +116,10 @@ object Run {
 
         val l2: List[Int] = mapUseFold[String, Int](l, a => a.hashCode)
 
+
+
+
+
         /*val l3 = flatListTailRecursive[Char](l2)
 
         MLogger.generalLogger.info("l3 is {}", l3)
@@ -103,7 +132,17 @@ object Run {
         val p = l3.foldRight(0)(fFold)
         MLogger.generalLogger.info("p is {}", p)*/
 
-        MLogger.generalLogger.info("l2 is {}", l2)
+
+        val a: Int => Int = a => a + 1
+
+        val b: String => Int = a => a.hashCode
+
+        val c = a.compose(b)
+
+        val o = c("phuch")
+
+
+        MLogger.generalLogger.info("o is {}", o)
 
     }
 }

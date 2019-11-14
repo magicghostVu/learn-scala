@@ -33,7 +33,7 @@ object TestTypeParams {
     }
 
     def myIndexOf[A](l: List[A], v: A): Int = {
-        return l.indexOf(v)
+        l.indexOf(v)
     }
 
     def testCorvariance: List[Any] = {

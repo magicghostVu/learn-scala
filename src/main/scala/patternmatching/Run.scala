@@ -113,13 +113,7 @@ object Run {
         tryMatchingType(println(args))*/
 
         val l: List[String] = List[String]("phuvh", "vint", "quyvv")
-
         val l2: List[Int] = mapUseFold[String, Int](l, a => a.hashCode)
-
-
-
-
-
         /*val l3 = flatListTailRecursive[Char](l2)
 
         MLogger.generalLogger.info("l3 is {}", l3)

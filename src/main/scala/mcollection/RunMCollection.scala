@@ -23,19 +23,26 @@ object RunMCollection {
     def useStream(): Unit = {
 
         lazy val fib: Stream[Int] = Stream.cons(0, Stream.cons(1, fib.zip(fib.tail).map(t => {
-
             MLogger.generalLogger.info("t1 is {}, t2 is {}", t._1, t._2)
-
             t._1 + t._2
-
         })))
 
+        lazy val fact: Stream[Int] = 1 #:: fact.zipWithIndex.map { case (p, x) => {
+            print(s" p is $p, x is $x");
+            p * (x + 1)
+        }
+        }
 
-        MLogger.generalLogger.info("fib is {}", fib(10))
+
+        MLogger.generalLogger.info("fib is {}", fact(5))
     }
 
     def testView(): Unit = {
         val sep: Seq[String] = Seq[String]("Java", "Scala", "Python", "JavaScript")
+
+        val sum = sep.foldLeft[Int](0)((int, str) => int + str.length)
+
+        MLogger.generalLogger.info("sum is {}", sum)
 
         val i: SeqView[String, Seq[String]] = sep.view
 
@@ -81,7 +88,11 @@ object RunMCollection {
         MLogger.generalLogger.info("ss is {}", ss)*/
 
         //testView()
-        useStream()
+        /*val o = 0
+        println(s"o $o")*/
+
+        //useStream()
+        testView()
 
     }
 

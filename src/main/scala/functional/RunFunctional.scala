@@ -19,6 +19,7 @@ class BTaxStrategy extends TaxStrategy {
 }
 
 object OO {
+
     /*implicit def kestrel[A](a: A) = new {
         def tap(sideEffect: A => Unit): A = {
             sideEffect(a)
@@ -41,7 +42,7 @@ class PP(var name: String)
 object RunFunctional {
 
     def myTaxIt(taxStrategy: TaxStrategy): String => Double = {
-        taxStrategy.taxIt
+        taxStrategy.taxIt _
     }
 
     def taxIt: TaxStrategy => String => Double = s => {
@@ -68,12 +69,38 @@ object RunFunctional {
 
 
         val pp = new PP("phuvh").tap(p2 => {
-            val name= p2.name
+            val name = p2.name
             MLogger.generalLogger.debug(s"name is $name")
         })
 
-        //pp
+
+        val ff: String => Int => String = str => {
+            val s: Int => String = i => {
+                "phuvh"
+            }
+            s
+        }
+
+        val f2: (String, String) => Int = (str1, str2) => {
+            str1.length + str2.length
+        }
 
 
+        val f3 = f2.curried("phuvh")
+
+        val res: Int = f3("vint")
+
+        MLogger.generalLogger.debug("res is {}", res)
+
+    }
+
+    def sum(xs: List[Int]): Int = {
+        def sumTailRecursive(list: List[Int], acc: Int): Int = {
+            list match {
+                case Nil => acc
+                case head :: tail => sumTailRecursive(tail, acc + head)
+            }
+        }
+        sumTailRecursive(xs, 0)
     }
 }

@@ -47,7 +47,7 @@ object MState {
 
     def modify[S](fModified: S => S): MState[S, Unit] = {
         val newApp: S => (S, Unit) = s => (fModified(s), ())
-        init[S].flatMap(s => {
+        init[S]().flatMap(s => {
             state(newApp)
         })
     }

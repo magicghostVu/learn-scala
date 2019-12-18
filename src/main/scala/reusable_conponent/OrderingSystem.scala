@@ -22,6 +22,8 @@ trait OrderingSystem {
     }
 
 
+    // sử dụng self-type
+    // bất cứ class nào sau này kế thừa Odering cũng phải có mix-in với I và S
     trait Ordering {
         this: I with S =>
         {
@@ -35,4 +37,8 @@ trait OrderingSystem {
         }
     }
 
+
+
+
 }
+

@@ -133,7 +133,7 @@ object Run {
 
         val c = a.compose(b)
 
-        val o = c("phuch")
+        val o = c("phuvh")
 
 
         MLogger.generalLogger.info("o is {}", o)

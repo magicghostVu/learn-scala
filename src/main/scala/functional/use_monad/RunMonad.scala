@@ -27,15 +27,16 @@ object RunMonad {
     def modifiedPriceState(fCalculatePrice: PriceState => Double): MState[PriceState, Unit] = {
 
         // trả về một priceState mới với giá được tính lại
-        MState.modify[PriceState](priceState => priceState.copy(price = fCalculatePrice(priceState)))
+        MState.modify[PriceState](oldState => oldState.copy(price = fCalculatePrice(oldState)))
 
 
     }
 
+
     def main(args: Array[String]): Unit = {
 
         //biến stateMonad đã inject tất cả các logic về việc đối tượng đầu vào sẽ biến đổi như thế nào qua các bước
-        //nó chỉ đợi thằng đầu vào ban đầu đi vào và chạy code thôi
+        //nó chỉ đợi thằng đầu vào ban đầu đi vào và chạy code
 
 
         def logStep(f: PriceState => String): MState[PriceState, String] = MState.gets[PriceState, String](f)
@@ -47,18 +48,28 @@ object RunMonad {
             _ <- modifiedPriceState(productDiscount)
             _ <- modifiedPriceState(applyTax)
 
-        } yield a :: Nil
+        } yield a
 
-        stateMonad
+        //stateMonad
 
         val priceState: PriceState = PriceState(10.0)
 
-        val updated = stateMonad(priceState)
+        val updated: (PriceState, String) = stateMonad(priceState)
 
 
         MLogger.generalLogger.debug("updated is {}, base is {}", updated._1.price, updated._2)
 
 
+    }
+
+    def monadLaw(): Unit = {
+
+        def f1(x: Int) = {
+            List(x, x + 1)
+        }
+
+        val l1 = List(1).flatMap(f1)
+        val l2 = f1(1)
     }
 
 }

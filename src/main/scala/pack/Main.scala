@@ -1,8 +1,20 @@
 package pack
 
-import java.util
+import useoop.MLogger
 
 
+case class MyClassHadFlatMap(value: Int) {
+    def map(f: Int => Int): MyClassHadFlatMap = {
+
+        MLogger.generalLogger.debug("old v is {}, new v is {}", value, f(value))
+
+        MyClassHadFlatMap(f(value))
+    }
+
+    def flatMap(f: MyClassHadFlatMap => MyClassHadFlatMap): MyClassHadFlatMap = {
+        f(this)
+    }
+}
 
 object Main {
 
@@ -55,7 +67,7 @@ object Main {
         /*val reduceFunc: (Int, Int) => Int = (a, b) => {
             a + b
         }*/
-        val mapFunc: Int => Int = a => 2 * a
+        /*val mapFunc: Int => Int = a => 2 * a
         val originVal = 0
 
         def reduceFunDef(a: Int, b: Int): Int = {
@@ -126,7 +138,9 @@ object Main {
         }
 
 
-        var rAa = aa(1, bb)
+        var rAa = aa(1, bb)*/
+
+        useForComprehension()
 
 
 
@@ -134,13 +148,29 @@ object Main {
     }
 
     def useForComprehension(): Unit = {
-        val l1: List[Int] = List[Int](1, 3, 4, 5)
 
-        val l2: List[Int] = List[Int](6, 7, 8, 9)
+        /*def plusOne(i: Int): Int = i + 1
+
+        def doubleInt(v: Int): Int = v * 2
+
+        def plusTwo(int: Int): Int = int + 2
+
+        val myC = MyClassHadFlatMap(0)
+
+        def modifyMyObject(f: Int => Int): MyClassHadFlatMap = {
+            //myC.flatMap()
+        }
+
+        val u = for {
+            a <- modifyMyObject(plusOne)
+            b <- modifyMyObject(doubleInt)
+            c <- modifyMyObject(plusTwo)
+        } yield 1
+
+        u
+        MLogger.generalLogger.debug("u is {}", u)*/
 
 
-        // sử dụng vòng for tổng quát
-        val l3: List[Int] = for (a <- l1; b <- l2; if a + b > 10) yield a + b
     }
 
 

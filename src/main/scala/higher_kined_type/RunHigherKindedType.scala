@@ -25,15 +25,33 @@ object ListFoldLeft extends MFoldable[List] {
 object RunHigherKindedType {
 
 
+    def runMapperExample(): Unit = {
+        val eitherMapper: EitherMapper[Exception] = new EitherMapper[Exception]
+
+        val myEither: Either[Exception, String] = Right("phuvh")
+
+        val newEither = eitherMapper.map[String, Int](myEither, str => str.length)
+
+        //newEither
+
+        MLogger.generalLogger.debug("new either is {}", newEither)
+
+    }
+
+
     def finalAbstractFunctionSum[F[_], A](coll: F[A], summable: Summable[A], foldable: MFoldable[F]): A = {
         foldable.foldLeft(coll, summable)
     }
 
     def main(args: Array[String]): Unit = {
-        val l = List("phuvh", "quyvv", "vint", "longtm")
+        /*val l = List("phuvh", "quyvv", "vint", "longtm")
         //val i = ListFoldLeft.foldLeft(l, SummableStr)
         val o = finalAbstractFunctionSum[List, String](l, SummableStr, ListFoldLeft)
 
-        MLogger.generalLogger.debug("")
+        MLogger.generalLogger.debug("")*/
+
+
+        runMapperExample()
+
     }
 }

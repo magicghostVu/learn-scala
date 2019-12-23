@@ -2,7 +2,6 @@ package reusable_conponent
 
 trait OrderingSystem {
 
-
     type O <: Order
 
     type I <: Inventory
@@ -15,6 +14,8 @@ trait OrderingSystem {
 
     trait Inventory {
         def itemExists(order: O): Boolean
+
+
     }
 
     trait Shipping {
@@ -26,18 +27,16 @@ trait OrderingSystem {
     // bất cứ class nào sau này kế thừa Odering cũng phải có mix-in với I và S
     trait Ordering {
         this: I with S =>
-        {
-            def placeOrder(o: O): Option[Long] = {
-                if (itemExists(o)) {
-                    o.placeOrder(this)
-                    Some(scheduleShipping(o))
-                }
-                else None
+
+        def placeOrder(o: O): Option[Long] = {
+            if (itemExists(o)) {
+                o.placeOrder(this)
+                Some(scheduleShipping(o))
             }
+            else None
         }
+
     }
-
-
 
 
 }

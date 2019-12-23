@@ -41,14 +41,15 @@ trait ReadOnlyCollection {
                 case NoOption => iterableData
                 case SkipOption(number, other) => {
                     val newIter = iterableData.skip(number)
-                    return applyOpt(newIter, other)
+                    applyOpt(newIter, other)
                 }
                 case LimitOption(maxSize, other) => {
                     val newIter = iterableData.limit(maxSize)
-                    return applyOpt(newIter, other)
+                    applyOpt(newIter, other)
                 }
             }
         }
+
         applyOpt(internal.find(query.dataQueryOrigin), query.queryOption)
     }
 

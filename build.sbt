@@ -15,6 +15,8 @@ libraryDependencies += "com.google.code.findbugs" % "jsr305" % "3.0.2"
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
 // https://mvnrepository.com/artifact/org.json/json
 libraryDependencies += "org.json" % "json" % "20190722"
+// https://mvnrepository.com/artifact/com.google.code.gson/gson
+libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
 
 
 

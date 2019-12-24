@@ -26,7 +26,7 @@ object RunHigherKindedType {
 
 
     def runMapperExample(): Unit = {
-        val eitherMapper: EitherMapper[Exception] = new EitherMapper[Exception]
+        val eitherMapper = new EitherMapper[Exception]
 
         val myEither: Either[Exception, String] = Right("phuvh")
 

@@ -2,7 +2,7 @@ package functional.expfunction
 
 import useoop.MLogger
 
-object PFunction {
+object MPartialFunction {
     def main(args: Array[String]): Unit = {
 
 

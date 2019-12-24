@@ -87,7 +87,9 @@ object RunNewPayroll {
     def main(args: Array[String]): Unit = run
 
     def run: Unit = {
-        val usPayroll = new USPayroll
-        USNewPayrollInstance.processPayroll(usPayroll)
+        //import RunNewPayroll._
+
+        /*val usPayroll = new USPayroll
+        USNewPayrollInstance.processPayroll(usPayroll)*/
     }
 }

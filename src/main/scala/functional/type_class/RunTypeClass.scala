@@ -4,6 +4,10 @@ import com.google.gson.Gson
 import useoop.MLogger
 
 object RunTypeClass {
+
+
+    // hàm này có tham số jsonConverter được để là ngầm định để có thế được truyền một cách "dynamic" theo ngữ cảnh
+    // chương trình
     def toJson[A](a: A)(implicit jsonConverter: JsonConverter[A]): String = {
         jsonConverter.toJson(a)
     }
@@ -20,19 +24,18 @@ object RunTypeClass {
 
     }
 
-    // MovieConverter
+    def toJsonMovie(movie: Movie): String = {
+        import Converters._
+        toJson(movie)
+    }
 
 
     def main(args: Array[String]): Unit = {
-        import Converters._
+        //import Converters._
         val m = Movie("twelve monkey", "12/12/1995")
-        val stringJson = toJson(m)
+        val stringJson = toJsonMovie(m)
         MLogger.generalLogger.debug("json is {}", stringJson)
-
         val h = m.getClass
-
         MLogger.generalLogger.debug("class is {}", h)
-
-
     }
 }

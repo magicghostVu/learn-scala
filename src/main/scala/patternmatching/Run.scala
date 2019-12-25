@@ -2,8 +2,6 @@ package patternmatching
 
 import useoop.MLogger
 
-import scala.collection.TraversableOnce
-
 
 object Run {
 

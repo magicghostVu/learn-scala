@@ -1,36 +1,44 @@
 package functional.type_class.solve_expr_problem
 
-
-case class Employee(id: Int, name: String)
-
-case class ContractEmployee(contractId: Int, name: String)
+import useoop.MLogger
 
 
-// A ở đây thể hiên loại nhân viên gì, có thể là nhân viên hợp đồng hoặc nhân viên chính thức
-case class USPayroll[TypePayee](seq: Seq[TypePayee]) {
-    def processPay(implicit processor: PayrollProcessor[USPayroll, TypePayee]): Either[String, Throwable] = {
-        processor.processPayroll(seq)
+object PayrollSystemWithTypeClass {
+
+    case class Employee(id: Int, name: String)
+
+    case class ContractEmployee(contractId: Int, name: String)
+
+
+    // A ở đây thể hiên loại nhân viên gì, có thể là nhân viên hợp đồng hoặc nhân viên chính thức
+    case class USPayroll[TypePayee](seq: Seq[TypePayee]) {
+        def processPay(implicit processor: PayrollProcessor[USPayroll, TypePayee]): Either[String, Throwable] = {
+            processor.processPayroll(seq)
+        }
     }
-}
 
-case class CanadaPayroll[TypePayee](seq: Seq[TypePayee]) {
-    def processPay(implicit processor: PayrollProcessor[CanadaPayroll, TypePayee]): Either[String, Throwable] = {
-        processor.processPayroll(seq)
+    case class CanadaPayroll[TypePayee](seq: Seq[TypePayee]) {
+        def processPay(implicit processor: PayrollProcessor[CanadaPayroll, TypePayee]): Either[String, Throwable] = {
+            processor.processPayroll(seq)
+        }
     }
-}
 
 
-// đây là một type class
-trait PayrollProcessor[Payroll[_], TypePayee] {
-    def processPayroll(payees: Seq[TypePayee]): Either[String, Throwable]
+    // đây là một type class
+    trait PayrollProcessor[Payroll[_], TypePayee] {
+        def processPayroll(payees: Seq[TypePayee]): Either[String, Throwable]
+    }
+
 }
 
 
 //tất cả các kiểu pay được khai báo implicit ở một nơi và sẽ được import theo ngữ cảnh sau này để trình biên dịch tự
 // match với các đối tượng tương ứng
-// object này gióng như một ma trận mà ở đó ta có thể mở rộng cả về 2 phía
+// object này giống như một ma trận mà ở đó ta có thể mở rộng cả về 2 phía
 // ta có thể thêm processor mới bất cứ khi nào với Payroll mới và/hoặc là kiểu payee mới đều không có vấn đề
 object AllPayrollProcessor {
+
+    import PayrollSystemWithTypeClass._
 
     implicit object USPayrollProcessor extends PayrollProcessor[USPayroll, Employee] {
 
@@ -46,10 +54,10 @@ object AllPayrollProcessor {
 
 object RunSolveExpressionProbl {
 
-
+    import PayrollSystemWithTypeClass._
+    import AllPayrollProcessor._
 
     def main(args: Array[String]): Unit = {
-
         /*kịch bản trong trường hợp này đó là ta cần cài đặt một hệ thống chi trả lương cho nhân
           viên chính thức ở các quốc gia khác nhau,
           tuy nhiên sau này khi được mở rộng thì hệ thống còn phải chi trả cho các nhân viên không chính thức (tạm gọi
@@ -60,5 +68,12 @@ object RunSolveExpressionProbl {
 
         /* việc trả lương hiện tại phụ thuộc vào 2 yếu tố đó là quốc gia và loại nhân viên
         */
+
+
+        val usPayroll = USPayroll(Vector[Employee](Employee(1, "phuvh")))
+        val rPay = usPayroll.processPay
+
+        MLogger.generalLogger.info("rPay is {}", rPay)
+
     }
 }

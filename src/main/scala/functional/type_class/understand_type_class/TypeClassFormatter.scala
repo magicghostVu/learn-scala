@@ -54,7 +54,7 @@ object TypeClassFormatter {
         val i = 9
         val formated = UApi.format[Int](i)
         val l = List(1, 2, 5, 7)
-        val ii = UApi.format[List[Int]](l)
+        val ii = UApi.format(l)
         MLogger.generalLogger.debug("ii is {}", ii)
     }
 }

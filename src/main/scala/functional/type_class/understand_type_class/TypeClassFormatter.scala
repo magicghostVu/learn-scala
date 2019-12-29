@@ -14,6 +14,10 @@ object AllFormatters {
         override def format(a: Int): String = a.toString
     }
 
+    implicit object FloatFormatter extends MFormatter[Float] {
+        override def format(a: Float): String = a.toString
+    }
+
     /*implicit def formatList[A](la: List[A])(implicit formatter: MFormatter[A]) = {
         la.map(formatter.format).mkString("::")
     }*/
@@ -30,6 +34,9 @@ object AllFormatters {
     }
 
 }
+
+
+
 
 object UApi {
     def format[A](a: A)(implicit formatter: MFormatter[A]) = {

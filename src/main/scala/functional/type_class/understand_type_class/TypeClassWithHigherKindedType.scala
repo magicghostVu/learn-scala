@@ -50,7 +50,7 @@ object TypeClassWithHigherKindedType {
 
         val o = Wrapper(1)
 
-        val l = List(o, Wrapper(1.2F))
+        val l = List[Wrapper[MFormatter]](o, Wrapper(1.2F))
 
         val f = UApi.format(l)
         MLogger.generalLogger.debug("f is {}", f)

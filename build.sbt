@@ -17,6 +17,11 @@ libraryDependencies += "commons-io" % "commons-io" % "2.6"
 libraryDependencies += "org.json" % "json" % "20190722"
 // https://mvnrepository.com/artifact/com.google.code.gson/gson
 libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
+// https://mvnrepository.com/artifact/org.scalaz/scalaz-core
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.27"
+// https://mvnrepository.com/artifact/com.github.mpilquist/simulacrum
+libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.13.0"
+
 
 
 

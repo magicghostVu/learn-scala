@@ -19,7 +19,7 @@ object AllFormatters {
     }
 
 
-    // hàm này như một cái cầu nối, 
+    // hàm này như một cái cầu nối,
     // ở đây, nó chỉ cho compiler biết cách để tạo ra một formatter cho List[A] khi đã biết formatter của A
     implicit def mlist[A](implicit formatter: MFormatter[A]): MFormatter[List[A]] = {
         //println()

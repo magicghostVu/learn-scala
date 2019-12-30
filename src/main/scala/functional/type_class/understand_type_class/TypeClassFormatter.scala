@@ -18,12 +18,9 @@ object AllFormatters {
         override def format(a: Float): String = a.toString
     }
 
-    /*implicit def formatList[A](la: List[A])(implicit formatter: MFormatter[A]) = {
-        la.map(formatter.format).mkString("::")
-    }*/
 
-    //implicit def list[A](implicit ev: MFormatter[A]): MFormatter[List[A]] = (a: List[A]) => a.map(e => ev.format(e)).mkString(" :: ")
-
+    // hàm này như một cái cầu nối, 
+    // ở đây, nó chỉ cho compiler biết cách để tạo ra một formatter cho List[A] khi đã biết formatter của A
     implicit def mlist[A](implicit formatter: MFormatter[A]): MFormatter[List[A]] = {
         //println()
         new MFormatter[List[A]] {

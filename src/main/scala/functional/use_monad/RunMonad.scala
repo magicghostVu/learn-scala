@@ -50,7 +50,6 @@ object RunMonad {
 
         } yield a
 
-        //stateMonad
 
         val priceState: PriceState = PriceState(10.0)
 

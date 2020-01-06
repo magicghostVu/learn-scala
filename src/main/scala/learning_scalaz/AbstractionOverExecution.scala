@@ -127,17 +127,30 @@ object AbstractionOverExecution {
 
 
     def main(args: Array[String]): Unit = {
-        echoFlatMap[Future]
-        echoFlatMap[Now]
+        /* echoFlatMap[Future]
+         echoFlatMap[Now]
 
-        echoFlatMap[Option]
+         echoFlatMap[Option]
 
 
-        val o = Option((1, 3))
+         val o = Option((1, 3))
 
-        val ff = for {
-            y <- o
-            (first, _) = y
-        } yield first
+         val ff = for {
+             y <- o
+             (first, _) = y
+         } yield first*/
+
+
+        val pf1: PartialFunction[String, Int] = {
+            case s: String if s.length == 7 => {
+                7
+            }
+        }
+        val pf2: PartialFunction[String, Int] = {
+            case s: String => 9
+        }
+
+        val r = pf1.orElse(pf2)("akjdnf")
+        println(r)
     }
 }

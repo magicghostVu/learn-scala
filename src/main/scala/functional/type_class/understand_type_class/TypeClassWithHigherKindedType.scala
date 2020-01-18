@@ -43,7 +43,6 @@ object WAllFormatter {
 object TypeClassWithHigherKindedType {
 
     import WAllFormatter._
-
     import AllFormatters._
 
     def main(args: Array[String]): Unit = {

@@ -22,8 +22,10 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
 libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.13.0"
 
 // https://mvnrepository.com/artifact/org.typelevel/cats-core
-libraryDependencies += "org.typelevel" %% "cats-core" % "1.6.0"
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 
+// https://mvnrepository.com/artifact/org.typelevel/cats-effect
+libraryDependencies += "org.typelevel" %% "cats-effect" % "2.0.0"
 
 
 

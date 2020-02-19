@@ -6,7 +6,7 @@ package functional.learn_cats.cat_eff_iomonad
 import cats.effect._
 import useoop.MLogger
 
-import scala.io.StdIn
+
 
 
 object RunIOMonadCats {

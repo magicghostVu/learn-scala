@@ -4,18 +4,13 @@ import useoop.MLogger
 
 
 // free monad sẽ wrap cái gì tùy thuộc nó thuộc loại nào trong 3 class bên dưới
-// S[A] ở đây là một ADT (kiểu dữ liệu đại số)
- 
+// S[A] ở đây là một ADT (kiểu dữ liệu đại số) 
 
 sealed trait Free[S[_], A] {
     def map[B](fmap: A => B): Free[S, B] = flatMap(a => Free.unit(fmap(a)))
 
-    def flatMap[B](bindingFunction: A => Free[S, B]): Free[S, B] = {
-        this match {
-            case Return(a) => bindingFunction(a)
-            case Suspend(s) =>
-        }
-    }
+    def flatMap[B](bindingFunction: A => Free[S, B]): Free[S, B] = ???
+
 }
 
 

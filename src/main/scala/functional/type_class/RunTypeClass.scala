@@ -12,6 +12,12 @@ object RunTypeClass {
         jsonConverter.toJson(a)
     }
 
+    implicit class mm[A](a: A) {
+        def toJson(implicit jsonConverter: JsonConverter[A]): String = {
+            jsonConverter.toJson(a)
+        }
+    }
+
 
     object Converters {
         val gson: Gson = new Gson()
@@ -22,18 +28,20 @@ object RunTypeClass {
             }
         }
 
+
+
     }
 
-    def toJsonMovie(movie: Movie): String = {
+    /*def toJsonMovie(movie: Movie): String = {
         import Converters._
-        toJson(movie)
-    }
+        movie.toJson
+    }*/
 
 
     def main(args: Array[String]): Unit = {
-        //import Converters._
+        import Converters._
         val m = Movie("twelve monkey", "12/12/1995")
-        val stringJson = toJsonMovie(m)
+        val stringJson = m.toJson
         MLogger.generalLogger.debug("json is {}", stringJson)
         val h = m.getClass
         MLogger.generalLogger.debug("class is {}", h)

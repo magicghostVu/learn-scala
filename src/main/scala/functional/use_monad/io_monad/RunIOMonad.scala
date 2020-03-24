@@ -42,7 +42,7 @@ object RunIoMonad {
     def mprintLine(string: String): IO[Unit] = {
         new IO[Unit] {
             override def run: Unit = {
-                //MLogger.generalLogger.error("call from ", new Exception())
+                MLogger.generalLogger.error("call from ", new Exception())
                 println(string)
                 // č
             }

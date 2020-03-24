@@ -57,19 +57,12 @@ object CatsRun {
 
         MLogger.generalLogger.debug("e is {}, h is {}", e, h)
         d1.some === d2.some
-
         val k = MyWrapper(d1)
         val k2 = MyWrapper(d2)
-
         val h1 = MyWrapper(4)
-
-
         val ll1 = List(k, k2)
-
         ll1.show
-
         val p = k.show
-
         MLogger.generalLogger.debug("p is {}", p)
 
     }

@@ -1,0 +1,42 @@
+package learn_fp_in_scala.chap7
+
+object RunR {
+
+
+    def tryControlFlow(a: Int): Int = {
+        if (a < 7) 8
+        else
+            5
+    }
+
+    def tryFoldRecursive(indexedSeq: IndexedSeq[Int]): Int = {
+
+        println("size is " + indexedSeq.size)
+
+        if (indexedSeq.size <= 1) {
+            indexedSeq.headOption.getOrElse(0)
+        } else {
+            val sizeHalf = indexedSeq.size / 2
+            val (l, r) = indexedSeq.splitAt(sizeHalf)
+            tryFoldRecursive(l) + tryFoldRecursive(r)
+        }
+
+    }
+
+    def main(args: Array[String]): Unit = {
+        val l: List[Int] = List(1, 2, 3, 4, 5, 6)
+
+        /*l.foldRight(0)((a, b) => {
+
+            val s = s"a is $a, b is $b"
+            println(s)
+            a + b
+        })*/
+
+        val sum = tryFoldRecursive(Vector[Int](1, 2, 3, 4, 5, 6, 7, 8))
+        println("sum is " + sum)
+
+
+    }
+
+}

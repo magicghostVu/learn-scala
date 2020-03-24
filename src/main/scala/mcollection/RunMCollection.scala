@@ -44,7 +44,7 @@ object RunMCollection {
 
         MLogger.generalLogger.info("sum is {}", sum)
 
-        val i: SeqView[String, Seq[String]] = sep.view
+        val i = sep.view
 
         MLogger.generalLogger.info("i is {}", i)
 

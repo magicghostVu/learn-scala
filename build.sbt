@@ -2,7 +2,7 @@ name := "learn-scala"
 
 version := "0.1"
 
-scalaVersion := "2.12.10"
+scalaVersion := "2.13.1"
 libraryDependencies += "org.mongodb" % "mongo-java-driver" % "3.8.0"
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.28"
@@ -17,9 +17,6 @@ libraryDependencies += "commons-io" % "commons-io" % "2.6"
 libraryDependencies += "org.json" % "json" % "20190722"
 // https://mvnrepository.com/artifact/com.google.code.gson/gson
 libraryDependencies += "com.google.code.gson" % "gson" % "2.8.5"
-
-// https://mvnrepository.com/artifact/com.github.mpilquist/simulacrum
-libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.13.0"
 
 // https://mvnrepository.com/artifact/org.typelevel/cats-core
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"

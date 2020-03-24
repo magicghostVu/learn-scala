@@ -1,5 +1,6 @@
 package learn_fp_in_scala.chap7
 
+
 object RunR {
 
 
@@ -22,6 +23,23 @@ object RunR {
         }
 
     }
+
+    def sum(indexedSeq: IndexedSeq[Int]): Int = {
+        if (indexedSeq.size <= 1) {
+            indexedSeq.headOption.getOrElse(0)
+        } else {
+            val halfSize = indexedSeq.size / 2
+
+            val (l, r) = indexedSeq.splitAt(halfSize)
+
+            val sumL = Par.unit[Int](sum(l))
+            val sumR = Par.unit[Int](sum(r))
+
+            Par.get[Int](sumL) + Par.get[Int](sumR)
+
+        }
+    }
+
 
     def main(args: Array[String]): Unit = {
         val l: List[Int] = List(1, 2, 3, 4, 5, 6)

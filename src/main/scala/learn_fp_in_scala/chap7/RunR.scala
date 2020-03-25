@@ -41,6 +41,23 @@ object RunR {
     }
 
 
+    def sum2(indexedSeq: IndexedSeq[Int]): Par[Int] = {
+        if (indexedSeq.size <= 1) {
+            Par.unit(indexedSeq.headOption.getOrElse(0))
+        } else {
+
+            val (l, r) = indexedSeq.splitAt(indexedSeq.size / 2)
+
+            val pl = sum2(l)
+
+            val pr = sum2(r)
+
+            Par.map2(pl, pr)(_ + _)
+        }
+
+    }
+
+
     def main(args: Array[String]): Unit = {
         val l: List[Int] = List(1, 2, 3, 4, 5, 6)
 

@@ -15,5 +15,8 @@ object Par {
     // thực hiện tính toán và trả ra giá trị
     def get[A](pa: Par[A]): A = ???
 
+
+    def map2[A, B, C](pa: Par[A], pb: Par[B])(functionMap: (A, B) => C): Par[C] = ???
+
 }
 

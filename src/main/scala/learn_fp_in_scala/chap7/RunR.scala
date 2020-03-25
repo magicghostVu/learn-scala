@@ -35,7 +35,7 @@ object RunR {
             val sumL = Par.unit[Int](sum(l))
             val sumR = Par.unit[Int](sum(r))
 
-            Par.get[Int](sumL) + Par.get[Int](sumR)
+            Par.run[Int](sumL) + Par.run[Int](sumR)
 
         }
     }

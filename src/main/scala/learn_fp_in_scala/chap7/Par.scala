@@ -16,7 +16,18 @@ object Par {
     def get[A](pa: Par[A]): A = ???
 
 
+    // thực ra hàm này có vai trò như hàm combine, chứ nó không phải là map
     def map2[A, B, C](pa: Par[A], pb: Par[B])(functionMap: (A, B) => C): Par[C] = ???
+
+
+    // trả về một folk cho par A nếu như có một par A hoặc là một hàm trả ra par A
+    // ngụ ý rằng việc evaluate cái kết quả trả ra của hàm này sẽ được chạy trên luồng khác
+    def folk[A](a: => Par[A]): Par[A] = ???
+
+
+    def lazyUnit[A](a: A): Par[A] = {
+        folk(unit(a))
+    }
 
 }
 

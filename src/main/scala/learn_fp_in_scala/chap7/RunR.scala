@@ -52,8 +52,12 @@ object RunR {
             Par.unit(indexedSeq.headOption.getOrElse(0))
         } else {
             val (l, r) = indexedSeq.splitAt(indexedSeq.size / 2)
+
+            //
             val pl = sum2(l)
             val pr = sum2(r)
+
+            // ở bước này ta sẽ thực thi 2 cái folk bên dưới riêng biệt rồi sau đó dùng map2 gộp lại
             Par.map2(Par.folk(pl), Par.folk(pr))(_ + _)
         }
 

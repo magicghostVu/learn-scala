@@ -1,8 +1,14 @@
 package learn_fp_in_scala.chap7
 
+import java.util.concurrent.{ExecutorService, Executors}
+
+import learn_fp_in_scala.chap7.Par.Par
+
 
 object RunR {
 
+
+    implicit val exe: ExecutorService = Executors.newFixedThreadPool(1)
 
     def tryControlFlow(a: Int): Int = {
         if (a < 7) 8
@@ -24,7 +30,7 @@ object RunR {
 
     }
 
-    def sum(indexedSeq: IndexedSeq[Int]): Int = {
+    /*def sum(indexedSeq: IndexedSeq[Int]): Int = {
         if (indexedSeq.size <= 1) {
             indexedSeq.headOption.getOrElse(0)
         } else {
@@ -38,7 +44,7 @@ object RunR {
             Par.run[Int](sumL) + Par.run[Int](sumR)
 
         }
-    }
+    }*/
 
 
     def sum2(indexedSeq: IndexedSeq[Int]): Par[Int] = {

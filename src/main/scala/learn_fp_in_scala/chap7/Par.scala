@@ -25,9 +25,61 @@ object Par {
     }
 
 
+    private case class Map2Future[A, B, C](futureA: Future[A], futureB: Future[B], f: (A, B) => C) extends Future[C] {
 
-    private case class Map2Future[A,B,C]()
+        @volatile
+        private var optionC: Option[C] = Option.empty
 
+        override def cancel(mayInterruptIfRunning: Boolean): Boolean = {
+            futureA.cancel(mayInterruptIfRunning) || futureB.cancel(mayInterruptIfRunning)
+        }
+
+        override def isCancelled: Boolean = {
+            futureA.isCancelled || futureB.isCancelled
+        }
+
+        override def isDone: Boolean = {
+            optionC.isDefined
+        }
+
+
+        // hàm này có thể bị gọi 2 lần trong 2 thread khác nhau, và dòng 50 có thể chạy 2 lần
+        // tuy nhiên điều này có thể chấp nhận được
+        override def get(): C = {
+            optionC match {
+                case None => {
+                    val c: C = compute(Long.MaxValue)
+                    c
+                }
+                case Some(value) => value
+            }
+        }
+
+        override def get(timeout: Long, unit: TimeUnit): C = {
+            optionC match {
+                case None => compute(TimeUnit.NANOSECONDS.convert(timeout, unit))
+                case Some(value) => value
+            }
+        }
+
+        private def compute(timeoutInNanos: Long): C = {
+            optionC match {
+                case None => {
+                    val start = System.nanoTime
+                    val ar = futureA.get(timeoutInNanos, TimeUnit.NANOSECONDS)
+                    val stop = System.nanoTime
+                    val aTime = stop - start
+                    val br = futureB.get(timeoutInNanos - aTime, TimeUnit.NANOSECONDS)
+                    val ret = f(ar, br)
+                    optionC = Some(ret)
+                    ret
+                }
+                case Some(value) => {
+                    value
+                }
+            }
+        }
+    }
 
 
     //type alias cho một function từ một executor service trả ra một Future[A]
@@ -39,7 +91,7 @@ object Par {
     def unit[A](a: => A): Par[A] = _ => UnitFuture[A](a)
 
 
-    // thực hiện tính toán và trả ra giá trị
+    // thực hiện tính toán và trả ra giá trị, đây là một hàm có side-effect
     def run[A](par: Par[A])(implicit executorService: ExecutorService): Future[A] = par(executorService)
 
 
@@ -68,6 +120,13 @@ object Par {
     // ngụ ý rằng hàm trả ra A này sẽ được chạy trên một thread khác
     def lazyUnit[A](a: => A): Par[A] = {
         folk[A](unit[A](a))
+    }
+
+
+    // sử dụng lazyUnit để viết hàm này
+    // async 1 hàm
+    def asyncF[A, B](f: A => B): A => Par[B] = {
+        a: A => lazyUnit(f(a))
     }
 
 }

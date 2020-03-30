@@ -4,7 +4,7 @@ import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 
 
 // một container cho việc tính toán song song
-// thực ra nó không phải là một container mà đó là gh lại mô tả về việc sẽ tính toán song song như thế nào
+// thực ra nó không phải là một container mà đó là ghi lại mô tả về việc sẽ tính toán song song như thế nào
 /*class Par[A] {
 
 }*/
@@ -12,20 +12,25 @@ import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 object Par {
 
 
-    private case class UnitFuture[A](a: A) extends Future[A] {
+    private case class UnitFuture[A](get: A) extends Future[A] {
         override def cancel(mayInterruptIfRunning: Boolean): Boolean = false
 
         override def isCancelled: Boolean = false
 
         override def isDone: Boolean = true
 
-        override def get(): A = a
+        //override def get(): A = a
 
-        override def get(timeout: Long, unit: TimeUnit): A = a
+        override def get(timeout: Long, unit: TimeUnit): A = get
     }
 
 
-    //type alias cho một function từ một executor service trả ra một future[A]
+
+    private case class Map2Future[A,B,C]()
+
+
+
+    //type alias cho một function từ một executor service trả ra một Future[A]
     type Par[A] = ExecutorService => Future[A]
 
 
@@ -40,10 +45,10 @@ object Par {
 
     // thực ra hàm này có vai trò như hàm combine, chứ nó không phải là map
     def map2[A, B, C](pa: Par[A], pb: Par[B])(functionMap: (A, B) => C): Par[C] = {
-        es => {
-            val fa = pa(es)
-            val fb = pb(es)
-            UnitFuture(functionMap(fa.get(), fb.get()))
+        es: ExecutorService => {
+            val futureA = pa(es)
+            val futureB = pb(es)
+            UnitFuture(functionMap(futureA.get(), futureB.get()))
         }
     }
 
@@ -52,13 +57,16 @@ object Par {
     // ngụ ý rằng việc evaluate cái kết quả trả ra của hàm này sẽ được chạy trên luồng khác
     def folk[A](a: => Par[A]): Par[A] = {
         es: ExecutorService => {
+
+            //submit một callable cho es
+            // callable đó lại thực ra là lấy thực thi parA và lấy ra A
             es.submit(() => a(es).get())
         }
     }
 
 
     // ngụ ý rằng hàm trả ra A này sẽ được chạy trên một thread khác
-    def lazyUnit[A](a: A): Par[A] = {
+    def lazyUnit[A](a: => A): Par[A] = {
         folk[A](unit[A](a))
     }
 

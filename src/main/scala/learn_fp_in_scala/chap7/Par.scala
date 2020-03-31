@@ -153,19 +153,36 @@ object Par {
     }
 
 
+    def parFilter[A](listA: List[A])(fFilter: A => Boolean): Par[List[A]] = {
+
+        //map list ban đầu thành một list các Par[List[A]]
+        val uu: List[Par[List[A]]] = listA.map(asyncF[A, List[A]](a => {
+            if (fFilter(a)) List(a)
+            else List()
+        }))
+
+
+        val uu2 = sequence(uu)
+
+        val uu3 = map(uu2)(listList => listList.flatten)
+
+        uu3
+
+    }
+
+
     // có thể dùng simpleSequence hoặc là balanceSequence
     def sequence[A](ps: List[Par[A]]): Par[List[A]] = {
         /*simpleSequence(ps)*/
-        map(balanceSequence(ps.toIndexedSeq))(idxSeq => idxSeq.toList)
+        map(balanceSequence(ps.toIndexedSeq))(_.toList)
     }
 
     def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = {
         folk({
-            val lpb = ps.map(a => {
-                val ff = asyncF(f)
-                ff(a)
+            val listParB = ps.map(a => {
+                asyncF(f)(a)
             })
-            sequence(lpb)
+            sequence(listParB)
         })
     }
 

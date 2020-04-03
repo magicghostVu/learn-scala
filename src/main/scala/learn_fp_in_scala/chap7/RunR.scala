@@ -47,7 +47,7 @@ object RunR {
     }*/
 
 
-    def sum2(indexedSeq: IndexedSeq[Int]): Par[Int] = {
+    /*def sum2(indexedSeq: IndexedSeq[Int]): Par[Int] = {
         if (indexedSeq.size <= 1) {
             Par.unit(indexedSeq.headOption.getOrElse(0))
         } else {
@@ -61,7 +61,7 @@ object RunR {
             Par.map2(Par.folk(pl), Par.folk(pr))(_ + _)
         }
 
-    }
+    }*/
 
 
     def main(args: Array[String]): Unit = {

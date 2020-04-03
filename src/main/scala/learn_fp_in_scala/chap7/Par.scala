@@ -1,6 +1,8 @@
 package learn_fp_in_scala.chap7
 
-import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
+import java.util.concurrent.{Callable, ExecutorService, Executors, Future, TimeUnit}
+
+import useoop.MLogger
 
 
 // một container cho việc tính toán song song
@@ -13,13 +15,12 @@ object Par {
 
 
     private case class UnitFuture[A](get: A) extends Future[A] {
+
         override def cancel(mayInterruptIfRunning: Boolean): Boolean = false
 
         override def isCancelled: Boolean = false
 
         override def isDone: Boolean = true
-
-        //override def get(): A = a
 
         override def get(timeout: Long, unit: TimeUnit): A = get
     }
@@ -93,15 +94,23 @@ object Par {
 
 
     // thực hiện tính toán và trả ra giá trị, đây là một hàm có side-effect
-    def run[A](par: Par[A])(implicit executorService: ExecutorService): Future[A] = par(executorService)
+    def run[A](par: Par[A])(implicit executorService: ExecutorService): Future[A] = {
+        //MLogger.generalLogger.error("call from ", new Exception)
+        par(executorService)
+    }
 
 
     // thực ra hàm này có vai trò như hàm combine, chứ nó không phải là map
     // nó là một hình thái của flatMap, => một phép trừu tượng được giải nghĩa rất đơn giản
     def map2[A, B, C](pa: Par[A], pb: Par[B])(functionCombine: (A, B) => C): Par[C] = {
         es: ExecutorService => {
+
+            // chỗ này đã gọi run
+            //tuy nhiên gọi run lại được thực thi ở bước cuối cùng khi ta tính kết quả
             val futureA = pa(es)
             val futureB = pb(es)
+
+
             Map2Future(futureA, futureB, functionCombine)
         }
     }
@@ -111,21 +120,14 @@ object Par {
     // ngụ ý rằng việc evaluate cái kết quả trả ra của hàm này sẽ được chạy trên luồng khác
     def folk[A](a: => Par[A]): Par[A] = {
         es: ExecutorService => {
-
             //submit một callable cho es
             //callable đó lại thực ra là lấy thực thi parA và lấy ra A
+
+            //MLogger.generalLogger.debug("call from", new Exception)
+
             es.submit(() => a(es).get())
         }
     }
-
-
-    // hàm này sẽ map song song từng phần tử rồi nối ghép các mảnh thành hoàn chỉnh 1 list
-    /*def parMap[A, B](listA: List[A])(fMap: A => B): Par[List[B]] = {
-        val listParB: List[Par[B]] = listA.map(asyncF(fMap))
-
-
-        null
-    }*/
 
 
     // sử dụng fold, tuy nhiên cách này sẽ không chạy song song được
@@ -135,6 +137,23 @@ object Par {
         })
     }
 
+
+    private def sequenceRight[A](ps: List[Par[A]]): Par[List[A]] = {
+        ps match {
+            case Nil => unit(Nil)
+            case ::(head, tail) => {
+                val parTail = sequenceRight(tail)
+                map2(head, parTail)((h, t) => {
+                    h :: t
+                })
+            }
+
+        }
+    }
+
+    /*def findMax(listInt: List[Int]): Par[Int] = {
+
+    }*/
 
     private def balanceSequence[A](ps: IndexedSeq[Par[A]]): Par[IndexedSeq[A]] = {
         if (ps.isEmpty) {
@@ -153,28 +172,40 @@ object Par {
     }
 
 
-    def parFilter[A](listA: List[A])(fFilter: A => Boolean): Par[List[A]] = {
+    // đếm tất cả các từ trong một đoạn văn một cách song song
+    // thử xem ta làm được gì... :)))
+    def wordCount(listString: List[String]): Par[Int] = {
 
+        // chạy song song các map
+        val parListInt: Par[List[Int]] = parMap(listString)(str => {
+            MLogger.generalLogger.debug("str is {}", str)
+            str.split(" ").length
+        })
+
+        val nn = map(parListInt)(listInt => {
+            listInt.sum
+        })
+        nn
+    }
+
+    def parFilter[A](listA: List[A])(fFilter: A => Boolean): Par[List[A]] = {
         //map list ban đầu thành một list các Par[List[A]]
         val uu: List[Par[List[A]]] = listA.map(asyncF[A, List[A]](a => {
             if (fFilter(a)) List(a)
             else List()
         }))
-
-
+        // biến list[par[list]] thành par[list[list]]
         val uu2 = sequence(uu)
-
         val uu3 = map(uu2)(listList => listList.flatten)
-
         uu3
-
     }
 
 
     // có thể dùng simpleSequence hoặc là balanceSequence
     def sequence[A](ps: List[Par[A]]): Par[List[A]] = {
-        /*simpleSequence(ps)*/
-        map(balanceSequence(ps.toIndexedSeq))(_.toList)
+        //simpleSequence(ps)
+        //map(balanceSequence(ps.toIndexedSeq))(_.toList)
+        sequenceRight(ps)
     }
 
     def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = {
@@ -184,6 +215,13 @@ object Par {
             })
             sequence(listParB)
         })
+    }
+
+
+    def parForeach[A](listA: List[A])(f: A => Unit): Par[Unit] = {
+        val v1 = parMap(listA)(f)
+
+        map(v1)(_ => ())
     }
 
 
@@ -206,13 +244,38 @@ object Par {
     // async 1 hàm bất kỳ (từ 1 hàm A=>B sẽ trả ra 1 hàm A=> Par[B])
     // nó sẽ chạy hàm map trên một thread khác
     def asyncF[A, B](f: A => B): A => Par[B] = {
-        a: A => lazyUnit(f(a))
+        a => lazyUnit(f(a))
     }
 
     def sortList(source: Par[List[Int]]): Par[List[Int]] = {
         map(source)(_.sorted)
     }
 
+
+    implicit class syntax[A](val par: Par[A]) extends AnyVal {
+        def run()(implicit executors: ExecutorService): Future[A] = {
+            Par.run(par)
+        }
+    }
+
+    def main(args: Array[String]): Unit = {
+
+        implicit val executor: ExecutorService = Executors.newFixedThreadPool(4)
+
+        val listString = List("Vũ Hồng Phú", "Vũ Văn Quý", "Nguyễn Thuỳ Vi")
+
+        //val parInt = wordCount(listString)
+
+        //parInt.run()
+
+        val u = parForeach(listString)(str => {
+            MLogger.generalLogger.debug("foreach str is {}", str)
+        })
+
+
+        u.run()
+
+    }
 
 }
 

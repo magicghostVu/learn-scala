@@ -102,6 +102,7 @@ object Par {
 
     // thực ra hàm này có vai trò như hàm combine, chứ nó không phải là map
     // nó là một hình thái của flatMap, => một phép trừu tượng được giải nghĩa rất đơn giản
+    // một trong các hàm cực kỳ quan trọng trong cài đặt này
     def map2[A, B, C](pa: Par[A], pb: Par[B])(functionCombine: (A, B) => C): Par[C] = {
         es: ExecutorService => {
 
@@ -122,11 +123,16 @@ object Par {
         es: ExecutorService => {
             //submit một callable cho es
             //callable đó lại thực ra là lấy thực thi parA và lấy ra A
-
             //MLogger.generalLogger.debug("call from", new Exception)
-
             es.submit(() => a(es).get())
         }
+        // nếu dùng như này thì sẽ tránh được phải dùng 2 thread tuy nhiên khi hàm a là một
+        // huge computation thì cái hàm folk này sẽ chạy rất lâu
+        //es => a(es)
+    }
+
+    def delay[A](a: => Par[A]): Par[A] = {
+        es: ExecutorService => a(es)
     }
 
 
@@ -141,7 +147,7 @@ object Par {
     private def sequenceRight[A](ps: List[Par[A]]): Par[List[A]] = {
         ps match {
             case Nil => unit(Nil)
-            case ::(head, tail) => {
+            case head :: tail => {
                 val parTail = sequenceRight(tail)
                 map2(head, parTail)((h, t) => {
                     h :: t
@@ -201,11 +207,15 @@ object Par {
     }
 
 
-    // có thể dùng simpleSequence hoặc là balanceSequence
+    // có thể dùng simpleSequence hoặc là balanceSequence hoặc sequenceRight
     def sequence[A](ps: List[Par[A]]): Par[List[A]] = {
         //simpleSequence(ps)
         //map(balanceSequence(ps.toIndexedSeq))(_.toList)
         sequenceRight(ps)
+    }
+
+    def equals[A](a: Par[A], b: Par[A])(implicit executorService: ExecutorService): Boolean = {
+        a(executorService).get() == b(executorService).get()
     }
 
     def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = {
@@ -220,7 +230,6 @@ object Par {
 
     def parForeach[A](listA: List[A])(f: A => Unit): Par[Unit] = {
         val v1 = parMap(listA)(f)
-
         map(v1)(_ => ())
     }
 
@@ -260,21 +269,18 @@ object Par {
 
     def main(args: Array[String]): Unit = {
 
-        implicit val executor: ExecutorService = Executors.newFixedThreadPool(4)
+        implicit val executorService: ExecutorService = Executors.newFixedThreadPool(2)
 
-        val listString = List("Vũ Hồng Phú", "Vũ Văn Quý", "Nguyễn Thuỳ Vi")
-
-        //val parInt = wordCount(listString)
-
-        //parInt.run()
-
-        val u = parForeach(listString)(str => {
-            MLogger.generalLogger.debug("foreach str is {}", str)
-        })
+        val p1 = unit("phuvh")
 
 
-        u.run()
+        val p2 = unit("phu")
 
+        val p3 = unit("v")
+
+        val p4 = map2(p2, p3)((a, b) => a.concat(b))
+
+        println(equals(p4, p1))
     }
 
 }

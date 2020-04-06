@@ -34,9 +34,7 @@ object FilterTextInFolder {
         val folderAllFile = new File(pathToFolder)
         val allChildren = folderAllFile.listFiles()
         val fListString = Par.parMap(allChildren.toList)(file => {
-
             MLogger.generalLogger.debug("file is {}", file.getName)
-
             val fr = new FileReader(file)
             val bReader = new BufferedReader(fr)
             val stream = bReader.lines()
@@ -45,14 +43,16 @@ object FilterTextInFolder {
                     str.contains(uid) && str.contains(ACTION) && str.contains(p1)
                 })
                 .collect(Collectors.toList())
-
-            MLogger.generalLogger.debug("list java class is {}", listJava.getClass)
-
             CollectionConverters.asScala(listJava).toList
         })
         val listFinal = Par.map(fListString)(_.flatten)
         val start = System.currentTimeMillis()
         val res = listFinal.run().get()
+
+
+
+
+
         val end = System.currentTimeMillis()
         MLogger.generalLogger.debug("time is {}, size is {}", end - start, res.size)
 

@@ -5,31 +5,41 @@ import java.util
 import java.util.concurrent.{ExecutorService, Executors}
 import java.util.stream.Collectors
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import learn_fp_in_scala.chap7.Par._
 import org.apache.commons.io.FileUtils
 import useoop.MLogger
 
-import scala.collection.immutable.HashMap
-import scala.collection.mutable
+import scala.io.StdIn
 import scala.jdk.javaapi.CollectionConverters
 
 
 object FilterTextInFolder {
     implicit val executor: ExecutorService = Executors.newFixedThreadPool(10)
 
-    private val uid = ""
+    private val uid = "108681643"
 
-    private val ACTION = "JACK_POT_INGAME"
+    private val ACTION = ""
 
     private val p1 = ""
 
     //private val param1 = "108847121"
 
 
-    def testListJava(): List[String] = {
-        val jl = util.Arrays.asList("23", "56")
-        CollectionConverters.asScala(jl).toList
+    def testListJava(): Unit = {
+
+
+        //val y = StdIn.readInt()
+
+
+        val l = (0 until 10)
+            .foldLeft(List[Int]())((a, b) => {
+                a.appended(1)
+            })
+            .map(_.toString)
+
+       l.reverse
+
     }
 
 
@@ -43,10 +53,30 @@ object FilterTextInFolder {
     }
 
 
+    /*def testExmaple(): Unit = {
+        object permissions {
+
+            sealed trait Permissions { type T }
+            case object Create { type T = Nothing }
+            case object Edit { type T = Item }
+            final case class Item (title: String)
+            def doWork[T0] (permission: Permissions { type T = T0 } , v: T0) =
+                permission match {
+                    //case Edit => ??? // Edit#T == Item is your type here
+                    case Edit => {
+
+                    }
+                }
+        }
+    }*/
+
+
+    case class UserUpdateElo(time: String, score: Int)
+
     def main(args: Array[String]): Unit = {
 
-
-        val pathToFolder = "E:\\work_at_home\\log_process"
+        testListJava()
+        /*val pathToFolder = "E:\\work_at_home\\log_process"
         val folderAllFile = new File(pathToFolder)
         val allChildren = folderAllFile.listFiles()
         val fListString = Par.parMap(allChildren.toList)(file => {
@@ -73,40 +103,23 @@ object FilterTextInFolder {
         //res.foreach(println(_))
         val listFinalUser = res
             .map(str => {
-                val tmp = str.split("\\|\\|")
-                val uid = tmp(1).split(";")(1).toInt
-                val arrNameGoldUrl = tmp(2).split(";")
-                val goldWin = arrNameGoldUrl(1).toLong
-                val name = arrNameGoldUrl(0)
-                val avatarUrl = arrNameGoldUrl(2)
-                UserWinJackpot(uid, goldWin, avatarUrl, name)
-            })
-            .foldRight(HashMap[Int, UserWinJackpot]())((u, m) => {
-                /*if (m.contains(u.uid)) {
-                    val old = m.get(u.uid).head
-                    val newUser = combine2User(old, u)
-                    m.put(u.uid, newUser)
-                } else {
-                    m.put(u.uid, u)
-                }
-                m*/
-                if (m.contains(u.uid)) {
-                    val old = m.get(u.uid).head
-                    val newUser = combine2User(old, u)
-                    m.+((u.uid, newUser))
 
-                } else {
-                    m.+((u.uid, u))
-                    //m2
-                }
+                val pp = str.split("  ")
+
+                val time = pp(0)
+
+                val uidNScore = pp(1).split(" - ")(1).split(" ")(2)
+
+                UserUpdateElo(time, uidNScore.toInt)
             })
-            .values.toList
+
+        //.values.toList
         val listJava = CollectionConverters.asJava(listFinalUser)
-        val gson = new Gson()
+        val gson = new GsonBuilder().setPrettyPrinting().create()
         val strToFile = gson.toJson(listJava)
         val path = System.getProperty("user.dir") + "/fileUser.json"
         FileUtils.writeStringToFile(new File(path), strToFile, "utf-8", false)
-        println("done")
+        println("done")*/
 
 
     }

@@ -1,6 +1,6 @@
 package learn_fp_in_scala.chap7
 
-import java.util.concurrent.{Callable, ExecutorService, Executors, Future, TimeUnit}
+import java.util.concurrent.{ExecutorService, Executors, Future, TimeUnit}
 
 import useoop.MLogger
 

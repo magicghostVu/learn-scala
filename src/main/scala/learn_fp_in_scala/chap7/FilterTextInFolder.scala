@@ -1,7 +1,7 @@
 package learn_fp_in_scala.chap7
 
 import java.io.{BufferedReader, File, FileReader}
-import java.util
+import java.util.{Collections, Comparator}
 import java.util.concurrent.{ExecutorService, Executors}
 import java.util.stream.Collectors
 
@@ -10,16 +10,16 @@ import learn_fp_in_scala.chap7.Par._
 import org.apache.commons.io.FileUtils
 import useoop.MLogger
 
-import scala.io.StdIn
+import scala.collection.immutable.HashMap
 import scala.jdk.javaapi.CollectionConverters
 
 
 object FilterTextInFolder {
-    implicit val executor: ExecutorService = Executors.newFixedThreadPool(10)
+    implicit val executor: ExecutorService = Executors.newFixedThreadPool(4)
 
-    private val uid = "108681643"
+    private val uid = ""
 
-    private val ACTION = ""
+    private val ACTION = "JACK_POT_INGAME"
 
     private val p1 = ""
 
@@ -38,7 +38,7 @@ object FilterTextInFolder {
             })
             .map(_.toString)
 
-       l.reverse
+        l.reverse
 
     }
 
@@ -75,8 +75,8 @@ object FilterTextInFolder {
 
     def main(args: Array[String]): Unit = {
 
-        testListJava()
-        /*val pathToFolder = "E:\\work_at_home\\log_process"
+        //testListJava()
+        val pathToFolder = "/Users/phuvh/Desktop/log_server_shweshan"
         val folderAllFile = new File(pathToFolder)
         val allChildren = folderAllFile.listFiles()
         val fListString = Par.parMap(allChildren.toList)(file => {
@@ -104,22 +104,53 @@ object FilterTextInFolder {
         val listFinalUser = res
             .map(str => {
 
-                val pp = str.split("  ")
+                /*val pp = str.split("  ")
 
                 val time = pp(0)
 
                 val uidNScore = pp(1).split(" - ")(1).split(" ")(2)
 
-                UserUpdateElo(time, uidNScore.toInt)
+                UserUpdateElo(time, uidNScore.toInt)*/
+
+                val pp = str.split("\\|\\|")
+
+                val uid = pp(1).split(";")(1)
+
+                val nameGoldUrl = pp(2).split(";")
+
+                val name = nameGoldUrl(0)
+                val gold = nameGoldUrl(1)
+
+                val url = nameGoldUrl(2)
+                UserWinJackpot(uid.toInt, gold.toLong, url, name)
+
             })
+            .foldRight(HashMap[Int, UserWinJackpot]())((user, crMap) => {
+                crMap.get(user.uid) match {
+                    case Some(u) => {
+                        crMap.updated(user.uid, combine2User(u, user))
+                    }
+                    case _ => {
+                        crMap.updated(user.uid, user)
+                    }
+                }
+            }).values.toList
+
+        println("list size is ", listFinalUser.size)
 
         //.values.toList
-        val listJava = CollectionConverters.asJava(listFinalUser)
+
+        val pp= listFinalUser.sortWith((a, b) => {
+            a.goldWin > b.goldWin
+        })
+        val listJava = CollectionConverters.asJava(pp)
+
+
         val gson = new GsonBuilder().setPrettyPrinting().create()
         val strToFile = gson.toJson(listJava)
         val path = System.getProperty("user.dir") + "/fileUser.json"
         FileUtils.writeStringToFile(new File(path), strToFile, "utf-8", false)
-        println("done")*/
+        println("done")
 
 
     }

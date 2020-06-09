@@ -78,6 +78,8 @@ object RunR {
         println("sum is " + sum)
 
 
+        //Actor[String]
+
     }
 
 }

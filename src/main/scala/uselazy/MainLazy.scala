@@ -8,9 +8,11 @@ object MainLazy {
     }
 
     def main(args: Array[String]): Unit = {
-        val mStream = MStream(1, 3, 4, 5)
+        val mStream = MStream(1, 3, 4)
         val p = mStream.toListFast()
-        println(p)
+        //println(p)
+
+        println(mStream.takeWhile(a => a <= 3).toList())
 
     }
 }

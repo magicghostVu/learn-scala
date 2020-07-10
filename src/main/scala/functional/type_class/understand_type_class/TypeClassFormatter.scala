@@ -36,7 +36,7 @@ object AllFormatters {
 
 
 object UApi {
-    def format[A](a: A)(implicit formatter: MFormatter[A]) = {
+    def format[A](a: A)(implicit formatter: MFormatter[A]): String = {
         formatter.format(a)
     }
 }

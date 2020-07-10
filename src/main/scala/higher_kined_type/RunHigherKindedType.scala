@@ -1,7 +1,7 @@
 package higher_kined_type
 
 import useoop.MLogger
-
+import scala.util.chaining._
 
 object SummableInt extends Summable[Int] {
     override def plus(a: Int, b: Int): Int = a + b
@@ -43,6 +43,16 @@ object RunHigherKindedType {
         foldable.foldLeft(coll, summable)
     }
 
+
+    def fun1(id: Int): Double = {
+        1
+    }
+
+
+    def fun2(sum: Double): Double = {
+        sum * 2
+    }
+
     def main(args: Array[String]): Unit = {
         /*val l = List("phuvh", "quyvv", "vint", "longtm")
         //val i = ListFoldLeft.foldLeft(l, SummableStr)
@@ -51,7 +61,12 @@ object RunHigherKindedType {
         MLogger.generalLogger.debug("")*/
 
 
-        runMapperExample()
+        //runMapperExample()
+
+
+        val o = RunHigherKindedType.fun1(1).pipe(fun2)
+
+        println(s"o = $o")
 
     }
 }

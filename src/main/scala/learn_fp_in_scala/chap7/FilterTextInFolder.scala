@@ -1,7 +1,6 @@
 package learn_fp_in_scala.chap7
 
 import java.io.{BufferedReader, File, FileReader}
-import java.util.{Collections, Comparator}
 import java.util.concurrent.{ExecutorService, Executors}
 import java.util.stream.Collectors
 

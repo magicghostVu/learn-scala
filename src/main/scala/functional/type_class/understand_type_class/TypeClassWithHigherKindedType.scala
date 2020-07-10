@@ -32,8 +32,8 @@ object WAllFormatter {
 
     // ở đây không biết a kiểu gì, nhưng nó biết cách để format a thông qua hàm fa của w
     implicit val evn: MFormatter[Wrapper[MFormatter]] = new MFormatter[Wrapper[MFormatter]] {
-        override def format(w: Wrapper[MFormatter]): String = {
-            w.fa.format(w.a)
+        override def format(wrapper: Wrapper[MFormatter]): String = {
+            wrapper.fa.format(wrapper.a)
         }
     }
 
@@ -50,6 +50,10 @@ object TypeClassWithHigherKindedType {
         val o = Wrapper(1)
 
         val l = List[Wrapper[MFormatter]](o, Wrapper(1.2F))
+
+        val o1 = l(0)
+
+        UApi.format(o1)
 
         val f = UApi.format(l)
         MLogger.generalLogger.debug("f is {}", f)

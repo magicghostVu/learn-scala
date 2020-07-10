@@ -11,6 +11,42 @@ sealed trait MStream[+A] {
         }
     }
 
+    @tailrec
+    final def exist(condition: A => Boolean): Boolean = {
+        this match {
+            case Empty => false
+            case Cons(head, tail) => {
+                /*if (condition(head())) true
+                else {
+                    tail().exist(condition)
+                }*/
+                condition(head()) || tail().exist(condition)
+            }
+        }
+    }
+
+
+    // hàm này ngu ở chỗ nó phải duyệt hết cả stream,
+    // tuy nhiên diểm sáng là nó sẽ không tính toán lại các biểu thức cond(a) sau khi đã gặp giá trị true
+    def exist2(cond: A => Boolean): Boolean = {
+        foldRight[Boolean](false)((a, b) => cond(a) || b)
+    }
+
+    // sẽ trả về giá trị tích lũy ngay khi gặp empty
+    // hàm fold này chưa được tối ưu do sử dụng đệ quy đầu
+    def foldRight[B](currentAcc: => B)(f: (A, => B) => B): B = {
+        this match {
+            case Empty => currentAcc
+            case Cons(head, tail) => {
+                f(head(), tail().foldRight(currentAcc)(f))
+            }
+        }
+    }
+
+
+    def forAll(condition: A => Boolean): Boolean = {
+        foldRight[Boolean](false)((a, b) => condition(a) && b)
+    }
 
 }
 
@@ -28,6 +64,7 @@ object MStream {
         lazy val t = tail
         Cons(() => h, () => t)
     }
+
 
     def apply[A](a: A*): MStream[A] = {
         if (a.isEmpty) {
@@ -91,8 +128,6 @@ object MStream {
     }
 
     def takeN2[A](stream: MStream[A], n: Int): MStream[A] = {
-
-
         def take2Recursive[A](count: Int, stream: MStream[A]): MStream[A] = {
             if (count == 0) {
                 empty
@@ -112,12 +147,9 @@ object MStream {
                     }
                 }
             }
-
         }
 
         take2Recursive(n, stream)
-
-
     }
 
 
@@ -141,8 +173,6 @@ object MStream {
     }
 
     def takeWhile[A](predicate: A => Boolean, stream: MStream[A]): MStream[A] = {
-
-
         def funTakeWhileRecursive[A](continue: Boolean, stream: MStream[A],
                                      predicate: A => Boolean): MStream[A] = {
             stream match {
@@ -172,6 +202,20 @@ object MStream {
         }
     }
 
+    def takeWhile2[A](condition: A => Boolean, stream: MStream[A]): MStream[A] = {
+        stream.foldRight[MStream[A]](empty)((currentVal, currentAcc) => {
+
+            // nếu
+            if (condition(currentVal)) {
+                //println(s"a is $a")
+                cons(currentVal, currentAcc)
+            } else {
+                empty
+            }
+        })
+    }
+
+
     implicit class MStreamOps[A](val stream: MStream[A]) extends AnyVal {
         def toList(): List[A] = {
             MStream.toList(stream).reverse
@@ -194,7 +238,8 @@ object MStream {
         }
 
         def takeWhile(predicate: A => Boolean): MStream[A] = {
-            MStream.takeWhile(predicate, stream)
+            //MStream.takeWhile(predicate, stream)
+            MStream.takeWhile2(predicate, stream)
         }
     }
 

@@ -15,9 +15,6 @@ sealed trait MStream[+A] {
     def headOption2(): Option[A] = {
         val o: Option[A] = None
         foldRight(o)((a, b) => {
-
-            println(s"run fold a is $a")
-
             Some(a)
         })
     }
@@ -25,7 +22,12 @@ sealed trait MStream[+A] {
     @tailrec
     final def exist(condition: A => Boolean): Boolean = {
         this match {
-            case Empty => false
+            case Empty => {
+
+                println("đã hết, exist")
+
+                false
+            }
             case Cons(head, tail) => {
                 /*if (condition(head())) true
                 else {
@@ -36,28 +38,24 @@ sealed trait MStream[+A] {
         }
     }
 
-
-    // hàm này ngu ở chỗ nó phải duyệt hết cả stream,
-    // tuy nhiên diểm sáng là nó sẽ không tính toán lại các biểu thức cond(a) về sau khi đã gặp giá trị true
+    // tuy nhiên diểm sáng là nó sẽ return ngay khi gặp được giá trị cần tìm mà k duyệt đến cuối
     def exist2(cond: A => Boolean): Boolean = {
-        foldRight[Boolean](false)((currentElement, currentBool) => currentBool || cond(currentElement))
+        foldRight[Boolean](false)((currentElement, currentBool) => cond(currentElement) || currentBool)
     }
 
-    // sẽ trả về giá trị tích lũy ngay khi gặp empty
-    // hàm fold này chưa được tối ưu do sử dụng đệ quy đầu
+
+    // hàm fold này chưa được tối ưu do sử dụng đệ quy đầu nhưng trong fold function nó có để 1 tham số là lazy để tối ưu hóa performance
+
     def foldRight[B](currentAcc: => B)(foldFunction: (A, => B) => B): B = {
         this match {
             case Empty => { // nếu stream đã hết thì trả về giá trị tích lũy hiện tại
 
-                println("đã hểt")
-
-
+                ///println("đã hểt")
                 currentAcc
             }
             case Cons(head, tail) => {
-
-                println("run fold h is " + head())
-
+                // bất cứ khi nào hàm fold có thể trả về được kết quả, thì hàm foldRight này sẽ return mà k cần chạy đến cuối stream
+                // do trong quá trình chạy có thể không cần evaluate tham số thứ 2 của foldFunction
                 foldFunction(head(), tail().foldRight(currentAcc)(foldFunction))
             }
         }
@@ -77,6 +75,52 @@ sealed trait MStream[+A] {
             }
             case _ =>
         }
+    }
+
+
+    def map[B](fMap: A => B): MStream[B] = {
+        foldRight[MStream[B]](Empty: MStream[B])((a, b) => {
+            Cons(() => fMap(a), () => b)
+        })
+    }
+
+    def mapv2[B](fMap: A => B): MStream[B] = {
+        @tailrec
+        def mapRecursive[E, F](currentStream: MStream[E], streamAccumulate: MStream[F], fMap: E => F): MStream[F] = {
+            currentStream match {
+                case Empty => streamAccumulate
+                case Cons(head, tail) => {
+                    mapRecursive(tail(), Cons[F](() => fMap(head()), () => streamAccumulate), fMap)
+                }
+            }
+        }
+
+        mapRecursive(this, Empty, fMap)
+    }
+
+    def filter(fFilter: A => Boolean): MStream[A] = {
+        foldRight(Empty: MStream[A])((a, b) => {
+            if (fFilter(a)) {
+                Cons(() => a, () => b)
+            } else {
+                b
+            }
+        })
+    }
+
+    def appendElement[B >: A](b: => B): MStream[B] = {
+        val streamB: MStream[B] = MStream.cons(b, Empty)
+        foldRight(streamB)((a, b) => {
+
+            //println("a is " + a)
+            MStream.cons(a, b)
+        })
+    }
+
+    def append[B >: A](streamB: => MStream[B]): MStream[B] = {
+        foldRight(streamB)((a, b) => {
+            MStream.cons(a, b)
+        })
     }
 
 
@@ -102,6 +146,53 @@ object MStream {
         Cons(() => h, () => t)
     }
 
+
+    // tạo một stream vô tận với hằng số đầu vào
+    def constant[A](a: A): MStream[A] = {
+        lazy val y: MStream[A] = cons(a, y)
+        y
+    }
+
+    def from(a: Int): MStream[Int] = {
+        cons(a, from(a + 1))
+    }
+
+    def fibs(): MStream[Int] = {
+        def fibsRecursive(a0: Int, a1: Int): MStream[Int] = {
+
+            //sẽ k gây stack over flow tại thời điểm gọi hàm này thì cái kết quả của cái fib bên dưới chưa được evaluate
+            cons(a0, fibsRecursive(a1, a0 + a1))
+        }
+
+        fibsRecursive(0, 1)
+    }
+
+
+    // một hàm nhận vào một đầu vào s, sau đó dùng hàm f để generate ra các phần tử tiếp theo của stream đến khi gặp none
+
+    // failed, not lazy
+    /*def unfold[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
+        @tailrec
+        def unfoldRecursive[B, C](currentState: C)(f: C => Option[(B, C)])(crStreamAcc: MStream[B]): MStream[B] = {
+            f(currentState) match {
+                case None => crStreamAcc
+                case Some((b, c)) => {
+                    val newStreamAcc = cons(b, crStreamAcc)
+                    unfoldRecursive(c)(f)(newStreamAcc)
+                }
+            }
+        }
+
+        unfoldRecursive(z)(f)(empty)
+    }*/
+
+    // lazy, trả về ngay lập tức
+    def unfold2[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
+        f(z) match {
+            case None => empty
+            case Some(value) => cons(value._1, unfold2(value._2)(f))
+        }
+    }
 
     def apply[A](elements: A*): MStream[A] = {
         if (elements.isEmpty) {
@@ -285,6 +376,12 @@ object MStream {
         def takeWhile(predicate: A => Boolean): MStream[A] = {
             //MStream.takeWhile(predicate, stream)
             MStream.takeWhile2(predicate, stream)
+        }
+
+        def sum(implicit add: Add[A]): A = {
+            stream.foldRight[A](add.initValue)((b, c) => {
+                add.add(b, c)
+            })
         }
     }
 

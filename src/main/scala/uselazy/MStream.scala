@@ -84,6 +84,7 @@ sealed trait MStream[+A] {
         })
     }
 
+    // failed -> not lazy
     def mapv2[B](fMap: A => B): MStream[B] = {
         @tailrec
         def mapRecursive[E, F](currentStream: MStream[E], streamAccumulate: MStream[F], fMap: E => F): MStream[F] = {
@@ -138,6 +139,7 @@ object MStream {
     def cons[A](head: => A, tail: => MStream[A]): MStream[A] = {
 
         // tạo mới các biến lazy để delay evaluation các tham số bên trên trong trường hợp các tham số này là một hàm
+        // và sẽ memorize giá trị này nếu đã được evaluate -> chỉ evaluate một lần
         lazy val h = head
         lazy val t = tail
 
@@ -168,31 +170,24 @@ object MStream {
     }
 
 
-    // một hàm nhận vào một đầu vào s, sau đó dùng hàm f để generate ra các phần tử tiếp theo của stream đến khi gặp none
-
-    // failed, not lazy
-    /*def unfold[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
-        @tailrec
-        def unfoldRecursive[B, C](currentState: C)(f: C => Option[(B, C)])(crStreamAcc: MStream[B]): MStream[B] = {
-            f(currentState) match {
-                case None => crStreamAcc
-                case Some((b, c)) => {
-                    val newStreamAcc = cons(b, crStreamAcc)
-                    unfoldRecursive(c)(f)(newStreamAcc)
-                }
-            }
-        }
-
-        unfoldRecursive(z)(f)(empty)
-    }*/
-
     // lazy, trả về ngay lập tức
-    def unfold2[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
+    def unfold[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
         f(z) match {
             case None => empty
-            case Some(value) => cons(value._1, unfold2(value._2)(f))
+            case Some(value) => cons(value._1, unfold(value._2)(f))
         }
     }
+
+
+    def mapBasedUnfold[A, B](streamOrigin: MStream[A], f: A => B): MStream[B] = {
+        MStream.unfold(streamOrigin) {
+            case Empty => None
+            case Cons(head, tail) => {
+                Some((f(head()), tail()))
+            }
+        }
+    }
+
 
     def apply[A](elements: A*): MStream[A] = {
         if (elements.isEmpty) {

@@ -45,7 +45,7 @@ sealed trait MStream[+A] {
 
 
     // hàm fold này chưa được tối ưu do sử dụng đệ quy đầu nhưng trong fold function nó có để 1 tham số là lazy để tối ưu hóa performance
-
+    //hàm fold
     def foldRight[B](currentAcc: => B)(foldFunction: (A, => B) => B): B = {
         this match {
             case Empty => { // nếu stream đã hết thì trả về giá trị tích lũy hiện tại
@@ -161,8 +161,8 @@ object MStream {
 
     def fibs(): MStream[Int] = {
         def fibsRecursive(a0: Int, a1: Int): MStream[Int] = {
-
-            //sẽ k gây stack over flow tại thời điểm gọi hàm này thì cái kết quả của cái fib bên dưới chưa được evaluate
+            //sẽ k gây stack over flow tại thời điểm gọi hàm này
+            // vì cái kết quả của cái fib bên dưới chưa được evaluate
             cons(a0, fibsRecursive(a1, a0 + a1))
         }
 
@@ -170,6 +170,21 @@ object MStream {
     }
 
 
+    def fibBasedUnfold(): MStream[Int] = {
+        unfold[Int, (Int, Int)]((0, 1))(pair => {
+            //Some()
+            Some(pair._1 + pair._2, (pair._2, pair._1 + pair._2))
+        })
+    }
+
+    def fromBasedUnfold(startValue: Int): MStream[Int] = {
+        unfold(startValue)(currentValue => {
+            Some(currentValue, currentValue + 1)
+        })
+    }
+
+    //một hàm nhận vào một đầu vào s,
+    // sau đó dùng hàm f để generate ra các phần tử tiếp theo của stream đến khi gặp none
     // lazy, trả về ngay lập tức
     def unfold[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
         f(z) match {
@@ -215,6 +230,8 @@ object MStream {
         toList(List(), stream)
     }
 
+
+    // hàm này là một hàm eager
     def toListFast[A](stream: MStream[A]): List[A] = {
         @tailrec
         def funRecursive[B](buffAccumulate: ListBuffer[B], streamRemain: MStream[B]): ListBuffer[B] = {
@@ -233,6 +250,7 @@ object MStream {
 
 
     //cài đặt hiện tại đang bị ngược, cần sửa lại
+    // hàm này k lazy nhưng nó sẽ return khi lấy đủ phần tử
     def takeN[A](streamOrigin: MStream[A], n: Int): MStream[A] = {
         if (n <= 0) empty
         else {
@@ -243,10 +261,17 @@ object MStream {
                     // trong trường hợp n vượt quá size của origin stream
                     case Empty => streamAcc
                     case Cons(head, tail) => {
-                        if (count == target) streamAcc
+
+
+                        if (count == target) {
+                            //println("run return")
+                            streamAcc
+                        }
                         else {
 
                             // nối vào đầu thì chả ngược
+
+                            //println(s"recursive count $count, target $target")
                             takeRecursive(count + 1, target, tail(), cons(head(), streamAcc))
                         }
                     }
@@ -257,6 +282,7 @@ object MStream {
         }
     }
 
+    // lazy
     def takeN2[A](stream: MStream[A], n: Int): MStream[A] = {
         def take2Recursive[A](count: Int, stream: MStream[A]): MStream[A] = {
             if (count == 0) {
@@ -269,6 +295,7 @@ object MStream {
                         }
                         // nếu vẫn lớn hơn 1
                         else {
+                            //println("return ran")
                             cons(head(), take2Recursive(count - 1, tail()))
                         }
                     }
@@ -332,12 +359,14 @@ object MStream {
         }
     }
 
+
+    //lazy vì dựa trên hàm fold
     def takeWhile2[A](condition: A => Boolean, stream: MStream[A]): MStream[A] = {
         stream.foldRight[MStream[A]](empty)((currentVal, currentStreamAcc) => {
 
             // nếu vẫn còn phần tử thỏa mãn thì nối giá trị hiện tại vào
             if (condition(currentVal)) {
-                println(s"a is $currentVal")
+                //println(s"a is $currentVal")
                 cons(currentVal, currentStreamAcc)
             }
             else {

@@ -16,25 +16,17 @@ object MainLazy {
 
 
         //r.forEach(println)
-        val infStream = MStream.fibs()
+        val infStream = MStream.fromBasedUnfold(0)
 
-        import Add.addForInt
+        val iv = infStream.take2N(10).forEach(println)
+
+        //println(iv)
+
+        /*import Add.addForInt
         val pp = infStream.takeN(10).sum
 
-        println("pp is " + pp)
+        println("pp is " + pp)*/
 
-
-        val pp2 = MStream.unfold2(10)(i => {
-
-            Some((i, i - 1))
-
-        })
-
-
-        val l = pp2.take2N(6).toList()
-        println(s"l is $l")
-
-        println("done")
 
     }
 }

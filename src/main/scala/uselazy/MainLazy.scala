@@ -12,21 +12,7 @@ object MainLazy {
         val stream1 = MStream(mList: _*)
         val l2 = List(2, 5, 6, 78, 8)
         val stream2 = MStream(l2: _*)
-        val r = stream1.append(stream2)
-
-
-        //r.forEach(println)
-        val infStream = MStream.fromBasedUnfold(0)
-
-        val iv = infStream.take2N(10).forEach(println)
-
-        //println(iv)
-
-        /*import Add.addForInt
-        val pp = infStream.takeN(10).sum
-
-        println("pp is " + pp)*/
-
-
+        val r = stream1.append(stream2).takeBasedUnfold(3)
+        r.forEach(println)
     }
 }

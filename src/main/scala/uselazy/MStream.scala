@@ -4,6 +4,14 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
 sealed trait MStream[+A] {
+
+    def isEmpty: Boolean = {
+        this match {
+            case Empty => true
+            case Cons(head, tail) => false
+        }
+    }
+
     def headOption: Option[A] = {
         this match {
             case Empty => None
@@ -201,6 +209,21 @@ object MStream {
                 Some((f(head()), tail()))
             }
         }
+    }
+
+
+    def takeBasedUnfold[A](originStream: MStream[A], n: Int): MStream[A] = {
+        MStream.unfold((0, originStream))(pair => {
+            pair._2 match {
+                case Empty => None
+                case Cons(head, tail) => {
+                    if (pair._1 == n) None
+                    else {
+                        Some(head(), (pair._1 + 1, tail()))
+                    }
+                }
+            }
+        })
     }
 
 
@@ -406,6 +429,10 @@ object MStream {
             stream.foldRight[A](add.initValue)((b, c) => {
                 add.add(b, c)
             })
+        }
+
+        def takeBasedUnfold(n: Int): MStream[A] = {
+            MStream.takeBasedUnfold(stream, n)
         }
     }
 

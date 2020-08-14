@@ -14,5 +14,15 @@ object MainLazy {
         val stream2 = MStream(l2: _*)
         val r = stream1.append(stream2).takeBasedUnfold(3)
         r.forEach(println)
+        r.sum
+
+        val k = MStream.constantBasedUnfold(6).takeBasedUnfold(2)
+
+        val g = k.zipAll(MStream.fibs().takeBasedUnfold(5))
+
+        g.takeBasedUnfold(6).forEach(println)
+
+
+        //println(s"k is $k")
     }
 }

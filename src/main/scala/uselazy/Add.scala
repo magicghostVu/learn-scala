@@ -1,5 +1,7 @@
 package uselazy
 
+
+/// type class cho việc tính sum
 trait Add[T] {
     def add(t1: T, t2: T): T
 

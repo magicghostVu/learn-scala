@@ -27,6 +27,7 @@ sealed trait MStream[+A] {
         })
     }
 
+
     @tailrec
     final def exist(condition: A => Boolean): Boolean = {
         this match {
@@ -133,6 +134,47 @@ sealed trait MStream[+A] {
     }
 
 
+    def zipAll[B](stream: MStream[B]): MStream[(Option[A], Option[B])] = {
+        MStream.unfold((this, stream))(p => {
+            val streamA = p._1
+            val streamB = p._2
+
+            val nextStreamA = streamA match {
+                case Empty => (None, Empty)
+                case Cons(head, tail) => (Some(head()), tail())
+            }
+
+
+            val nextStreamB = streamB match {
+                case Empty => (None, Empty)
+                case Cons(head, tail) => (Some(head()), tail())
+            }
+
+            if (nextStreamA._1.isEmpty && nextStreamB._1.isEmpty) {
+                None
+            } else {
+                Some((nextStreamA._1, nextStreamB._1), (nextStreamA._2, nextStreamB._2))
+            }
+        })
+    }
+
+    def startWith[B >: A](streamToCheckStart: MStream[B]): Boolean = {
+        streamToCheckStart.
+            zipAll(this)
+            .map(p => {
+                val r = for {
+                    v1 <- p._1
+                    v2 <- p._2
+                } yield v1.equals(v2)
+                r match {
+                    case None => false
+                    case Some(value) => value
+                }
+            })
+            .forAll(_.equals(true))
+    }
+
+
 }
 
 case object Empty extends MStream[Nothing]
@@ -191,9 +233,17 @@ object MStream {
         })
     }
 
+    def constantBasedUnfold(value: Int): MStream[Int] = {
+        unfold(1)(_ => {
+            Some(value, 1)
+        })
+    }
+
+
     //một hàm nhận vào một đầu vào s,
     // sau đó dùng hàm f để generate ra các phần tử tiếp theo của stream đến khi gặp none
-    // lazy, trả về ngay lập tức
+    // hàm này lazy, trả về ngay lập tức
+    // tuy nhiên điểm yếu là hàm này k stack-safe
     def unfold[A, S](z: S)(f: S => Option[(A, S)]): MStream[A] = {
         f(z) match {
             case None => empty
@@ -225,6 +275,9 @@ object MStream {
             }
         })
     }
+
+
+    //def zipAll()
 
 
     def apply[A](elements: A*): MStream[A] = {

@@ -1,5 +1,7 @@
 package higher_kined_type
 
+
+//functor type-class
 trait Mapper[T[_]] {
     def map[A, B](originValue: T[A], fMap: A => B): T[B]
 }

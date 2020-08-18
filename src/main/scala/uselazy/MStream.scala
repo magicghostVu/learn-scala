@@ -307,7 +307,6 @@ object MStream {
     }
 
 
-    // hàm này là một hàm eager
     def toListFast[A](stream: MStream[A]): List[A] = {
         @tailrec
         def funRecursive[B](buffAccumulate: ListBuffer[B], streamRemain: MStream[B]): ListBuffer[B] = {
@@ -383,9 +382,13 @@ object MStream {
         }
 
         take2Recursive(n, stream)
+
+
+
     }
 
 
+    //not lazy
     def dropN[A](stream: MStream[A], n: Int): MStream[A] = {
 
         @tailrec

@@ -2,8 +2,6 @@ package learn_fp_in_scala.chap7
 
 import java.util.concurrent.{ExecutorService, Executors}
 
-import learn_fp_in_scala.chap7.Par.Par
-
 
 object RunR {
 
@@ -66,7 +64,6 @@ object RunR {
 
     def main(args: Array[String]): Unit = {
         val l: List[Int] = List(1, 2, 3, 4, 5, 6)
-
         /*l.foldRight(0)((a, b) => {
 
             val s = s"a is $a, b is $b"
@@ -76,8 +73,6 @@ object RunR {
 
         val sum = tryFoldRecursive(Vector[Int](1, 2, 3, 4, 5, 6, 7, 8))
         println("sum is " + sum)
-
-
         //Actor[String]
 
     }

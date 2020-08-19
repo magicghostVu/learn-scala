@@ -13,13 +13,19 @@ trait Parsers[ParserError, Parser[+_]] {
     def map[A, B](parser: Parser[A])(f: A => B): Parser[B]
 
 
+    //
     def slice[A](parser: Parser[A]): Parser[String]
 
     def product[A, B](p: Parser[A], p2: Parser[B]): Parser[(A, B)]
 
 
     def map2[A, B, C](parserA: Parser[A],
-                      parserB: Parser[B])(f: (A, B) => C): Parser[C] = product(parserA, parserB).map(ab => f(ab._1, ab._2))
+                      parserB: Parser[B])(f: (A, B) => C): Parser[C] = product(parserA, parserB).map(f.tupled)
+
+
+    def manyBasedOnOthers[A](parser: Parser[A]): Parser[List[A]] = {
+        map2(parser, manyBasedOnOthers(parser))(_ :: _) or succeed(List[A]())
+    }
 
 
     // chưa hiểu ý đồ của đoạn này =)))))))))))))))))

@@ -23,6 +23,26 @@ object MainLazy {
         g.takeBasedUnfold(6).forEach(println)
 
 
+        val stream3 = MStream(2, 5)
+        val startWith3 = stream2.zipAll(stream3)
+            .filter(po => {
+
+
+                po._1.isDefined && po._2.isDefined
+            })
+            .map(p => {
+                val r = for {
+                    v1 <- p._1
+                    v2 <- p._2
+                } yield v1.equals(v2)
+                r match {
+                    case None => false
+                    case Some(value) => value
+                }
+            })
+
+        println(startWith3.forAll(_ == true))
+
         //println(s"k is $k")
     }
 }

@@ -2,8 +2,8 @@ package functional.type_class.understand_type_class
 
 import useoop.MLogger
 
-// w đóng vai trò như một wrapper cho các kiểu mà mình sẽ bỏ vào trong
-// C sau này sẽ thành formatter, còn A sẽ thành các class mà formatter sẽ xử lý
+// Wrapper đóng vai trò như một wrapper cho các kiểu mà mình sẽ bỏ vào trong
+// fa sau này sẽ thành formatter, còn A sẽ thành các class mà formatter sẽ xử lý
 trait Wrapper[Formatter[_]] {
     type A
     val a: A

@@ -1,6 +1,6 @@
 package chap10_monoid
 
-import chap10_monoid.MMonoid.{foldMap, intAddition}
+import chap10_monoid.MMonoid.{foldMap, foldMapV, intAddition}
 
 object RunChap10 {
     def main(args: Array[String]): Unit = {
@@ -20,6 +20,16 @@ object RunChap10 {
 
         val b = f3(6)
 
+        val seq = IndexedSeq(1, 3, 45, 6, 7)
+
+        val m = foldMapV(seq, intAddition)(a => a)
+
+        println(s"m is $m")
+
+
+
+        /*import learn_fp_in_scala.chap7.Par
+        Par.parMap()*/
 
     }
 
